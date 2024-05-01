@@ -8,6 +8,99 @@
 
     <body>
 
+        <!-- header -->
+        <h1 id="header">Candidate Submission</h1>
+        <h1 id="header-placeholder">Candidate Submission</h1>
+
+        <!-- 10 total candidates -->
+        <!-- for each candidate, create a div with text that says 'Candidate X: Not Submitted' or 'Candidate X: {lastName}, {firstName}' -->
+        <!-- at the start of each div, put either a green checkmark, or a red X -->
+
+        <!-- when the user clicks on one of these divs, animate a drop-down menu that has text box inputs for:
+            first & last name, 
+            grade(drop-down), 
+            position(e.g. President, Grade 9 Rep, etc.), 
+            message, and a link to an image. 
+        -->
+
+        <div id="candidate-0" class="candidate-div">
+            
+            <!-- put an arrow here to indicate that this is a drop-down-menu -->
+
+            <!-- image that will be a green checkmark or a red X -->
+            <!-- <img src="assets/crossmark.png" class="submission-state-image"> -->
+
+            <span class="div-header-text">Candidate 1: <span id="candidate-0-header" class="candidate-info-box">Not Submitted</span></span>
+
+        </div>
+
+        <div id="candidate-1" class="candidate-div">
+
+        </div>
+
+        <div id="candidate-2" class="candidate-div">
+
+        </div>
+
+        <div id="candidate-3" class="candidate-div">
+
+        </div>
+
+        <div id="candidate-4" class="candidate-div">
+
+        </div>
+
+        <div id="candidate-5" class="candidate-div">
+
+        </div>
+
+        <div id="candidate-6" class="candidate-div">
+
+        </div>
+
+        <div id="candidate-7" class="candidate-div">
+
+        </div>
+
+        <div id="candidate-8" class="candidate-div">
+
+        </div>
+
+        <div id="candidate-9" class="candidate-div">
+
+        </div>
+
+
+        <!-- only allow the user to have one info input open at a time -->
+        <!-- whenever the user clicks off of a drop-down, disable the text boxes -->
+
+        <!-- have a 'Submit' button at the bottom of each menu -->
+        <!-- when the 'Submit' button is clicked: 
+
+            perform data verification checks
+            if these checks fail, update the div to show the user where the failure occured.
+
+            remove the text boxes, and add the information in them to the prompt label 
+            remove the submit button
+            add an 'Edit' button that will:
+                bring back the text boxes with the submitted data inside them
+                add 'Save' and 'Cancel' buttons that will either save the new information, or cancel the edits that have been made.
+
+        -->
+
+        <!-- the data verification checks will make sure that the submited information is fully valid. they will:
+            check that every box has an input
+            capitalize the first letter of the first and last name, and lowercase the rest of the letters
+            properly capitalize the letters in the message
+            put each new sentence of the message on a new line
+            verify that the image link is functional by attempting to open it in some way
+         -->
+
+        
+
+
+
+
         <script src="scripts/script.js"></script>
     </body>
     
