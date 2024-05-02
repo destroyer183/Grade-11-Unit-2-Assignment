@@ -1,6 +1,6 @@
 body {
     color: black;
-    background-color: dimgrey; /* remember to change color back to white! */
+    background-color: white; /* remember to change color back to white! */
     font-family: sans-serif;
     margin: 0;
     padding: 0;
@@ -8,10 +8,10 @@ body {
 }
 
 #header {
+    background-color: lightgray;
     font-size: 5rem;
     margin: 0 auto;
-    padding: 1rem;
-    padding-right: 1rem;
+    padding: 1rem 0;
     border-bottom: black 0.2rem solid;
     position: fixed;
     width: 100%;
@@ -24,9 +24,63 @@ body {
     font-size: 5rem;
     margin: 0 auto;
     margin-bottom: 3rem;
-    padding: 1rem;
+    padding: 1rem 0;
+}
+
+#input-master-div {
+    display: inline-block;
+    margin: 0 auto;
+    align-items: center;
 }
 
 .candidate-div {
+    font-size: 2rem;
     background-color: dodgerblue;
+    margin: 2rem auto;
+    padding: 0.5rem;
+    /* display: inline-block; */
+    /* justify-content: left; */
+    /* align-items: center; */
+    border-radius: 2rem;
+}
+
+.header-div {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+.dd-arrow {
+    height: 2rem;
+    padding-left: 0.25rem
+}
+
+.submission-state-image {
+    padding: 0 0.5rem;
+    height: 2rem;
+}
+
+.div-header-text {
+    padding: 0 0.5rem;
+    display: block;
+}
+
+.input-div {
+    font-size: 1.75rem;
+}
+
+.input-group {
+    margin: 1rem 0;
+    display: flex;
+    justify-content: left;
+}
+
+.input-prompt {
+    padding: 0 1rem;
+}
+
+
+
+.hidden-on-load {
+    display: none;
 }

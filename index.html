@@ -6,7 +6,7 @@
         <link rel="stylesheet" href="styles/style.css">
     </head>
 
-    <body>
+    <body onload="start();">
 
         <!-- header -->
         <h1 id="header">Candidate Submission</h1>
@@ -23,50 +23,45 @@
             message, and a link to an image. 
         -->
 
-        <div id="candidate-0" class="candidate-div">
+        <div id="input-master-div">
+
             
-            <!-- put an arrow here to indicate that this is a drop-down-menu -->
+            <!-- <div class="candidate-div"> -->
+                
+                <!-- put an arrow here to indicate that this is a drop-down-menu -->
+                <!-- <img class="dd-arrow" src="assets/ddarrow.png"> -->
 
-            <!-- image that will be a green checkmark or a red X -->
-            <!-- <img src="assets/crossmark.png" class="submission-state-image"> -->
+                <!-- image that will be a green checkmark or a red X -->
+                <!-- <img class="submission-state-image" src="assets/crossmark.png"> -->
 
-            <span class="div-header-text">Candidate 1: <span id="candidate-0-header" class="candidate-info-box">Not Submitted</span></span>
+                <!-- <span class="div-header-text"><b>Candidate 1: </b> <span class="candidate-info-box">Not Submitted</span> </span> -->
 
-        </div>
+                <!-- for the inputs, create it in the following way:
+                    <span class="">
+                        <b>{Prompt} </b>     use the innerHTML tag in javascript to allow part of the text to be bolded properly
+                        <input type="" class="">    this will be where the user can type their input
+                 -->
 
-        <div id="candidate-1" class="candidate-div">
+            <!-- </div> -->
 
-        </div>
+            <!-- <div id="candidate-1" class="candidate-div"> -->
+                
+                <!-- put an arrow here to indicate that this is a drop-down-menu -->
+                <!-- <img class="dd-arrow" src="assets/ddarrow.png"> -->
 
-        <div id="candidate-2" class="candidate-div">
+                <!-- image that will be a green checkmark or a red X -->
+                <!-- <img class="submission-state-image" src="assets/crossmark.png"> -->
 
-        </div>
+                <!-- <span class="div-header-text"><b>Candidate 1: </b> <span class="candidate-info-box">Not Submittttted</span> </span> -->
 
-        <div id="candidate-3" class="candidate-div">
+            <!-- </div> -->
+            
 
-        </div>
 
-        <div id="candidate-4" class="candidate-div">
+            <!-- put all other candidate divs in the master div -->
 
-        </div>
 
-        <div id="candidate-5" class="candidate-div">
 
-        </div>
-
-        <div id="candidate-6" class="candidate-div">
-
-        </div>
-
-        <div id="candidate-7" class="candidate-div">
-
-        </div>
-
-        <div id="candidate-8" class="candidate-div">
-
-        </div>
-
-        <div id="candidate-9" class="candidate-div">
 
         </div>
 
@@ -90,6 +85,7 @@
 
         <!-- the data verification checks will make sure that the submited information is fully valid. they will:
             check that every box has an input
+            prevent the user from inputting characters other than letters into the first and last name boxes
             capitalize the first letter of the first and last name, and lowercase the rest of the letters
             properly capitalize the letters in the message
             capitalize the first letter of each word the the candidate's 'position'
