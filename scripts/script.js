@@ -24,7 +24,6 @@ class Candidate {
             imageInput: candidateDiv.imageInputBox
         };
 
-
         // add candidate to class candidate array
         Candidate.candidates.push(this);
     }
@@ -33,6 +32,23 @@ class Candidate {
     verifyData() {
 
         console.log('Data is being verified and re-formatted.');
+
+        // remove whitespace in first & last name input fields
+        this.inputReferences.firstNameInput.value = this.inputReferences.firstNameInput.value.trim();
+        this.inputReferences.lastNameInput.value = this.inputReferences.lastNameInput.value.trim();
+
+        // uppercase the first letter and lowercase the rest of each input
+        this.inputReferences.firstNameInput.value = this.inputReferences.firstNameInput.value.substring(0, 1).toUpperCase() + this.inputReferences.firstNameInput.value.substring(1, this.inputReferences.firstNameInput.value.length).toLowerCase();
+        this.inputReferences.lastNameInput.value = this.inputReferences.lastNameInput.value.substring(0, 1).toUpperCase() + this.inputReferences.lastNameInput.value.substring(1, this.inputReferences.lastNameInput.value.length).toLowerCase();
+
+        let sentenceTerminators = '!.?';
+
+        // do stuff here to reformat the inputted sentence
+
+
+
+
+
 
         return;
     }
@@ -67,7 +83,7 @@ class Candidate {
                 this.inputReferences.firstNameInput.value = '';
 
                 errorFound = true;
-            } 
+            }
 
             if (this.inputReferences.lastNameInput.value != '' && this.inputReferences.lastNameInput.value.indexOf(character) != -1) {
 
@@ -104,11 +120,15 @@ class Candidate {
 
         // check to see if there are any errors in the inputs
         if (this.putErrorMessage()) {return;}
-        
+
         // reformat the inputted data
         this.verifyData();
 
         // update input box information and submission state image
+        this.candidateDiv.divHeaderSpan.innerHTML = this.candidateDiv.divHeaderSpan.innerHTML.replaceAll('Not Submitted', (this.inputReferences.firstNameInput.value + ', ' + this.inputReferences.lastNameInput.value));
+
+        this.candidateDiv.submissionStateImage.setAttribute('src', 'assets/checkmark.png');
+
 
         // change buttons that are visible
 
@@ -190,7 +210,7 @@ class Candidate {
             candidateItems.submissionStateImage.setAttribute('class', 'submission-state-image');
 
             candidateItems.divHeaderSpan.setAttribute('class', 'div-header-text');
-            candidateItems.divHeaderSpan.innerHTML = '<b>Candidate ' + (i+1) + ':</b> Not Submitted';
+            candidateItems.divHeaderSpan.innerHTML = '<b>Candidate ' + (i+1) + ': </b>Not Submitted';
 
 
             // set attribute for input div
