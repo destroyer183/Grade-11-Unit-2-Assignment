@@ -96,6 +96,7 @@ class Candidate {
 
             candidateItems.headerDiv.setAttribute('class', 'header-div');
 
+
             candidateItems.ddArrow.setAttribute('src', 'assets/ddarrow.png');
             candidateItems.ddArrow.setAttribute('class', 'dd-arrow');
 
@@ -107,7 +108,7 @@ class Candidate {
 
 
             // set attribute for input div
-            candidateItems.inputDiv.setAttribute('class', 'input-div hidden-on-load');
+            candidateItems.inputDiv.setAttribute('class', 'input-div');
 
 
             // set attributes for the individual divs that hold the input info
@@ -225,11 +226,22 @@ class Candidate {
 
             candidateItems.imageDiv.appendChild(candidateItems.imagePrompt);
             candidateItems.imageDiv.appendChild(candidateItems.imageInputBox);
+
+
+
+            // give div collapsible functionalities
+            candidateItems.candidateDiv.addEventListener('click', function() {
+                this.classList.toggle('active');
+                // candidateItems.candidateDiv.toggle('active');
+                let content = candidateItems.inputDiv;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                }
+            });
             
 
-
-            // add candidate group to dictionary of candidate divs
-            // Candidate.inputDivs['candidate' + i] = candidateItems;
 
             // make the class object here
             new Candidate(candidateItems);

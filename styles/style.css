@@ -50,6 +50,10 @@ body {
     align-items: center;
 }
 
+.active, .candidate-div:hover {
+    background-color: deepskyblue;
+}
+
 .dd-arrow {
     height: 2rem;
     padding-left: 0.25rem
@@ -67,6 +71,9 @@ body {
 
 .input-div {
     font-size: 1.75rem;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.2s ease-out;
 }
 
 .input-group {
