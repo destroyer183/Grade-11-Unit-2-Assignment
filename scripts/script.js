@@ -9,7 +9,6 @@
 class Candidate {
 
     static candidates ={};
-    // static inputDivs = {};
 
     constructor(candidateDiv) {
 
@@ -30,9 +29,54 @@ class Candidate {
         Candidate.candidates['candidate' + Object.keys(Candidate.candidates).length] = this;
     }
 
+    // this will be the function that will verify and adjust the inputted data
     verifyData() {
 
-        // this will be the function that will verify and adjust the inputted data
+        return;
+    }
+
+    putErrorMessage() {
+
+        let emptyFound = false;
+
+        // determine which inputs have no input, and put a prompt for the user to give an input
+        for (let input of this.inputReferences) {
+            if (input.value == '') {
+
+                emptyFound = true;
+
+
+
+            }
+        }
+    }
+
+    // this will be the function that is called when the user submits data
+    submitData() {
+        console.log('this is ' + this.candidateDiv.divHeaderSpan.innerHTML);
+
+        // check to make sure all fields are inputted
+        if (!(
+            this.inputReferences.firstNameInput.value && 
+            this.inputReferences.lastNameInput.value && 
+            this.inputReferences.gradeInput.value != 'null' && 
+            this.inputReferences.positionInput.value != 'null' && 
+            this.inputReferences.messageInput.value && 
+            this.inputReferences.imageInput.value
+        )) {
+
+            // put error message
+
+            return;
+        }
+
+        // verify that inputted data follows follows input constraints
+        this.verifyData();
+
+        // update input box information and submission state image
+
+        // change buttons that are visible
+
         return;
     }
 
@@ -61,35 +105,42 @@ class Candidate {
                 firstNameDiv: document.createElement('div'),        // div to hold this input group
                 firstNamePrompt: document.createElement('span'),    // first name input prompt
                 firstNameInputBox: document.createElement('input'), // first name input box
+                firstNameError: document.createElement('span'),     // span for error message
 
                 lastNameDiv: document.createElement('div'),        // div to hold this input group
                 lastNamePrompt: document.createElement('span'),    // last name input prompt
                 lastNameInputBox: document.createElement('input'), // last name input box
+                lastNameError: document.createElement('span'),     // span for error message
 
                 gradeDiv: document.createElement('div'),         // div to hold this input group
                 gradePrompt: document.createElement('span'),     // grade input prompt
                 gradeInputBox: document.createElement('select'), // grade input box
+                gradeError: document.createElement('span'),      // span for error message
 
                 positionDiv: document.createElement('div'),         // div to hold this input group
                 positionPrompt: document.createElement('span'),     // position input prompt
                 positionInputBox: document.createElement('select'), // position input box
+                positionError: document.createElement('span'),      // span for error message
 
                 messageDiv: document.createElement('div'),        // div to hold this input group
                 messagePrompt: document.createElement('span'),    // message input prompt
                 messageInputBox: document.createElement('input'), // message input box
+                messageError: document.createElement('span'),     // span for error message
 
                 imageDiv: document.createElement('div'),        // div to hold this input group
                 imagePrompt: document.createElement('span'),    // image input prompt
                 imageInputBox: document.createElement('input'), // image input box
+                imageError: document.createElement('span'),     // span for error message
 
 
+                buttonDiv: document.createElement('div'),       // div to hold the buttons
                 submitButton: document.createElement('button'), // submit button
-
-                editButton: document.createElement('button'),  // edit button
-                saveButton: document.createElement('button'),  // save edits button
-                cancelButton: document.createElement('button') // cancel edits button
+                editButton: document.createElement('button'),   // edit button
+                saveButton: document.createElement('button'),   // save edits button
+                cancelButton: document.createElement('button')  // cancel edits button
 
             };
+
 
             // set attributes of header elements
             candidateItems.candidateDiv.setAttribute('class', 'candidate-div');
@@ -97,7 +148,7 @@ class Candidate {
             candidateItems.headerDiv.setAttribute('class', 'header-div');
 
 
-            candidateItems.ddArrow.setAttribute('src', 'assets/ddarrow.png');
+            candidateItems.ddArrow.setAttribute('src', 'assets/ddarrow closed.png');
             candidateItems.ddArrow.setAttribute('class', 'dd-arrow');
 
             candidateItems.submissionStateImage.setAttribute('src', 'assets/crossmark.png');
@@ -109,6 +160,9 @@ class Candidate {
 
             // set attribute for input div
             candidateItems.inputDiv.setAttribute('class', 'input-div');
+
+            // set attribute for button div
+            candidateItems.buttonDiv.setAttribute('class', 'button-div');
 
 
             // set attributes for the individual divs that hold the input info
@@ -128,6 +182,11 @@ class Candidate {
             candidateItems.firstNameInputBox.setAttribute('maxlength', '50');
             candidateItems.firstNameInputBox.setAttribute('required', 'required');
 
+            candidateItems.firstNameError.setAttribute('class', 'error-message');
+            candidateItems.firstNameError.innerHTML = 'Please fill out this field.';
+
+
+
 
             // set attributes for last name input
             candidateItems.lastNamePrompt.setAttribute('class', 'input-prompt');
@@ -138,6 +197,9 @@ class Candidate {
             candidateItems.lastNameInputBox.setAttribute('maxlength', '50');
             candidateItems.lastNameInputBox.setAttribute('required', 'required');
 
+            candidateItems.lastNameError.setAttribute('class', 'error-message');
+            candidateItems.lastNameError.innerHTML = 'Please fill out this field.';
+
 
             // set attributes for grade input
             candidateItems.gradePrompt.setAttribute('class', 'input-prompt');
@@ -147,11 +209,15 @@ class Candidate {
             candidateItems.gradeInputBox.setAttribute('name', 'grade');
             candidateItems.gradeInputBox.setAttribute('required', 'required');
             candidateItems.gradeInputBox.innerHTML = (
+                '<option value="">Choose an option</option>' +
                 '<option value="9">9</option>' + 
                 '<option value="10">10</option>' +
                 '<option value="11">11</option>' +
                 '<option value="12">12</option>'
             );
+
+            candidateItems.gradeError.setAttribute('class', 'error-message');
+            candidateItems.gradeError.innerHTML = 'Please fill out this field.';
 
 
             // set attributes for position input
@@ -162,6 +228,7 @@ class Candidate {
             candidateItems.positionInputBox.setAttribute('name', 'position');
             candidateItems.positionInputBox.setAttribute('required', 'required');
             candidateItems.positionInputBox.innerHTML = (
+                '<option value="">Choose an option</option>' +
                 '<option value="Grade 10 Representative">Grade 10 Representative</option>' +
                 '<option value="Grade 11 Representative">Grade 11 Representative</option>' +
                 '<option value="Grade 12 Representative">Grade 12 Representative</option>' +
@@ -169,6 +236,9 @@ class Candidate {
                 '<option value="Physical Artist Apprentice">Physical Artist Apprentice</option>' +
                 '<option value="Videographer Apprentice">Videographer Apprentice</option>'
             );
+
+            candidateItems.positionError.setAttribute('class', 'error-message');
+            candidateItems.positionError.innerHTML = 'Please fill out this field.';
 
 
             // set attributes for message input
@@ -180,6 +250,9 @@ class Candidate {
             candidateItems.messageInputBox.setAttribute('maxlength', '200');
             candidateItems.messageInputBox.setAttribute('required', 'required');
 
+            candidateItems.messageError.setAttribute('class', 'error-message');
+            candidateItems.messageError.innerHTML = 'Please fill out this field.';
+
 
             // set attributes for image input
             candidateItems.imagePrompt.setAttribute('class', 'input-prompt');
@@ -189,6 +262,25 @@ class Candidate {
             candidateItems.imageInputBox.setAttribute('type', 'file');
             candidateItems.imageInputBox.setAttribute('accept', 'image/*');
             candidateItems.imageInputBox.setAttribute('required', 'required');
+
+            candidateItems.imageError.setAttribute('class', 'error-message');
+            candidateItems.imageError.innerHTML = 'Please fill out this field.';
+
+
+            // set attributes for buttons
+            candidateItems.submitButton.setAttribute('class', 'submission-button');
+            let submitButtonFunction = 'Candidate.candidates["candidate' + i + '"].submitData()';
+            candidateItems.submitButton.setAttribute('onclick', submitButtonFunction);
+            candidateItems.submitButton.innerHTML = 'Submit';
+
+            candidateItems.editButton.setAttribute('class', 'submission-button hidden-on-load');
+            candidateItems.editButton.innerHTML = 'Edit';
+            
+            candidateItems.saveButton.setAttribute('class', 'submission-button hidden-on-load');
+            candidateItems.saveButton.innerHTML = 'Save';
+
+            candidateItems.cancelButton.setAttribute('class', 'submission-button hidden-on-load');
+            candidateItems.cancelButton.innerHTML = 'Cancel';
 
 
 
@@ -208,43 +300,72 @@ class Candidate {
             candidateItems.inputDiv.appendChild(candidateItems.positionDiv);
             candidateItems.inputDiv.appendChild(candidateItems.messageDiv);
             candidateItems.inputDiv.appendChild(candidateItems.imageDiv);
+            candidateItems.inputDiv.appendChild(candidateItems.buttonDiv);
 
             candidateItems.firstNameDiv.appendChild(candidateItems.firstNamePrompt);
             candidateItems.firstNameDiv.appendChild(candidateItems.firstNameInputBox);
+            candidateItems.firstNameError.style.left = candidateItems.firstNameInputBox.offsetLeft + 'px';
+            candidateItems.firstNameDiv.appendChild(candidateItems.firstNameError);
 
             candidateItems.lastNameDiv.appendChild(candidateItems.lastNamePrompt);
             candidateItems.lastNameDiv.appendChild(candidateItems.lastNameInputBox);
+            candidateItems.lastNameError.style.left = candidateItems.lastNameInputBox.offsetLeft + 'px';
+            candidateItems.lastNameDiv.appendChild(candidateItems.lastNameError);
 
             candidateItems.gradeDiv.appendChild(candidateItems.gradePrompt);
             candidateItems.gradeDiv.appendChild(candidateItems.gradeInputBox);
+            candidateItems.gradeError.style.left = candidateItems.gradeInputBox.offsetLeft + 'px';
+            candidateItems.gradeDiv.appendChild(candidateItems.gradeError);
 
             candidateItems.positionDiv.appendChild(candidateItems.positionPrompt);
             candidateItems.positionDiv.appendChild(candidateItems.positionInputBox);
+            candidateItems.positionError.style.left = candidateItems.positionInputBox.offsetLeft + 'px';
+            candidateItems.positionDiv.appendChild(candidateItems.positionError);
 
             candidateItems.messageDiv.appendChild(candidateItems.messagePrompt);
             candidateItems.messageDiv.appendChild(candidateItems.messageInputBox);
+            candidateItems.messageError.style.left = candidateItems.messageInputBox.offsetLeft + 'px';
+            candidateItems.messageDiv.appendChild(candidateItems.messageError);
 
             candidateItems.imageDiv.appendChild(candidateItems.imagePrompt);
             candidateItems.imageDiv.appendChild(candidateItems.imageInputBox);
+            candidateItems.imageError.style.left = candidateItems.imageInputBox.offsetLeft + 'px';
+            candidateItems.imageDiv.appendChild(candidateItems.imageError);
+
+
+            candidateItems.buttonDiv.appendChild(candidateItems.submitButton);
+            candidateItems.buttonDiv.appendChild(candidateItems.editButton);
+            candidateItems.buttonDiv.appendChild(candidateItems.saveButton);
+            candidateItems.buttonDiv.appendChild(candidateItems.cancelButton);
+
+            
+
+            // make the class object
+            let temp = new Candidate(candidateItems);
 
 
 
             // give div collapsible functionalities
-            candidateItems.candidateDiv.addEventListener('click', function() {
-                this.classList.toggle('active');
-                // candidateItems.candidateDiv.toggle('active');
+            candidateItems.headerDiv.addEventListener('click', function() {
                 let content = candidateItems.inputDiv;
                 if (content.style.maxHeight) {
+                    candidateItems.ddArrow.setAttribute('src', 'assets/ddarrow closed.png');
                     content.style.maxHeight = null;
+                    // disable inputs
+                    for (let input of Object.values(temp.inputReferences)) {
+                        input.disabled = true;
+                    }
+
                 } else {
                     content.style.maxHeight = content.scrollHeight + 'px';
+                    candidateItems.ddArrow.setAttribute('src', 'assets/ddarrow open.png');
+                    // enable inputs
+                    let inputs = Object.values(temp.inputReferences);
+                    for (let input of inputs) {
+                        input.disabled = false;
+                    }
                 }
             });
-            
-
-
-            // make the class object here
-            new Candidate(candidateItems);
         }
     }
 }

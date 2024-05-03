@@ -38,9 +38,6 @@ body {
     background-color: dodgerblue;
     margin: 2rem auto;
     padding: 0.5rem;
-    /* display: inline-block; */
-    /* justify-content: left; */
-    /* align-items: center; */
     border-radius: 2rem;
 }
 
@@ -48,6 +45,7 @@ body {
     display: flex;
     justify-content: left;
     align-items: center;
+    cursor: pointer;
 }
 
 .active, .candidate-div:hover {
@@ -77,9 +75,10 @@ body {
 }
 
 .input-group {
-    margin: 1rem 0;
+    margin: 1.75rem 0;
     display: flex;
     justify-content: left;
+    position: relative;
 }
 
 .input-prompt {
@@ -88,6 +87,25 @@ body {
 
 .input-box {
     font-size: 1.5rem;
+    position: relative;
+}
+
+.button-div {
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.submission-button {
+    font-size: 1.5rem;
+    border-radius: 1rem;
+    cursor: pointer;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.75rem;
+    position: absolute;
+    top: -1rem;
 }
 
 
