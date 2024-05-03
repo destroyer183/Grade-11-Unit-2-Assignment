@@ -8,24 +8,26 @@
 
 class Candidate {
 
-    static candidates = [];
-    static inputDivs = {};
+    static candidates ={};
+    // static inputDivs = {};
 
-    constructor(firstNameInput, lastNameInput, gradeInput, positionInput, messageInput, imageInput) {
+    constructor(candidateDiv) {
+
+        this.candidateDiv = candidateDiv;
 
         // this will be a dictionary of all of the html inputs that coorespond to each type of candidate data
         this.inputReferences = {
-            firstNameInput: firstNameInput, 
-            lastNameInput: lastNameInput, 
-            gradeInput: gradeInput, 
-            positionInput: positionInput,
-            messageInput: messageInput,
-            imageInput: imageInput
+            firstNameInput: candidateDiv.firstNameInputBox, 
+            lastNameInput: candidateDiv.lastNameInputBox, 
+            gradeInput: candidateDiv.gradeInputBox, 
+            positionInput: candidateDiv.positionInputBox,
+            messageInput: candidateDiv.messageInputBox,
+            imageInput: candidateDiv.imageInputBox
         };
 
 
         // add candidate to class candidate dictionary
-        Candidate.candidates.push(this);
+        Candidate.candidates['candidate' + Object.keys(Candidate.candidates).length] = this;
     }
 
     verifyData() {
@@ -68,9 +70,9 @@ class Candidate {
                 gradePrompt: document.createElement('span'),     // grade input prompt
                 gradeInputBox: document.createElement('select'), // grade input box
 
-                positionDiv: document.createElement('div'),       // div to hold this input group
-                positionPrompt: document.createElement('span'),   // position input prompt
-                positionInptBox: document.createElement('input'), // position input box
+                positionDiv: document.createElement('div'),         // div to hold this input group
+                positionPrompt: document.createElement('span'),     // position input prompt
+                positionInputBox: document.createElement('select'), // position input box
 
                 messageDiv: document.createElement('div'),        // div to hold this input group
                 messagePrompt: document.createElement('span'),    // message input prompt
@@ -89,7 +91,7 @@ class Candidate {
 
             };
 
-            // set attributes of every element
+            // set attributes of header elements
             candidateItems.candidateDiv.setAttribute('class', 'candidate-div');
 
             candidateItems.headerDiv.setAttribute('class', 'header-div');
@@ -104,47 +106,88 @@ class Candidate {
             candidateItems.divHeaderSpan.innerHTML = '<b>Candidate ' + (i+1) + ':</b> Not Submitted';
 
 
-            candidateItems.inputDiv.setAttribute('class', 'input-div');
+            // set attribute for input div
+            candidateItems.inputDiv.setAttribute('class', 'input-div hidden-on-load');
 
 
+            // set attributes for the individual divs that hold the input info
             candidateItems.firstNameDiv.setAttribute('class', 'input-group');
+            candidateItems.lastNameDiv.setAttribute('class', 'input-group');
+            candidateItems.gradeDiv.setAttribute('class', 'input-group');
+            candidateItems.positionDiv.setAttribute('class', 'input-group');
+            candidateItems.messageDiv.setAttribute('class', 'input-group');
+            candidateItems.imageDiv.setAttribute('class', 'input-group');
             
+            // set attributes for first name input
             candidateItems.firstNamePrompt.setAttribute('class', 'input-prompt');
             candidateItems.firstNamePrompt.innerHTML = '<b>First Name: </b>';
 
             candidateItems.firstNameInputBox.setAttribute('class', 'input-box');
             candidateItems.firstNameInputBox.setAttribute('type', 'text');
+            candidateItems.firstNameInputBox.setAttribute('maxlength', '50');
             candidateItems.firstNameInputBox.setAttribute('required', 'required');
 
 
-            candidateItems.lastNameDiv.setAttribute('class', 'input-group');
-
+            // set attributes for last name input
             candidateItems.lastNamePrompt.setAttribute('class', 'input-prompt');
             candidateItems.lastNamePrompt.innerHTML = '<b>Last Name: </b>';
 
             candidateItems.lastNameInputBox.setAttribute('class', 'input-box');
             candidateItems.lastNameInputBox.setAttribute('type', 'text');
+            candidateItems.lastNameInputBox.setAttribute('maxlength', '50');
             candidateItems.lastNameInputBox.setAttribute('required', 'required');
 
 
-            candidateItems.gradeDiv.setAttribute('class', 'input-group');
-
+            // set attributes for grade input
             candidateItems.gradePrompt.setAttribute('class', 'input-prompt');
             candidateItems.gradePrompt.innerHTML = '<b>Grade: </b>';
             
             candidateItems.gradeInputBox.setAttribute('class', 'input-box');
             candidateItems.gradeInputBox.setAttribute('name', 'grade');
             candidateItems.gradeInputBox.setAttribute('required', 'required');
+            candidateItems.gradeInputBox.innerHTML = (
+                '<option value="9">9</option>' + 
+                '<option value="10">10</option>' +
+                '<option value="11">11</option>' +
+                '<option value="12">12</option>'
+            );
 
 
-            candidateItems.positionDiv
+            // set attributes for position input
+            candidateItems.positionPrompt.setAttribute('class', 'input-prompt');
+            candidateItems.positionPrompt.innerHTML = '<b>Position: </b>';
+
+            candidateItems.positionInputBox.setAttribute('class', 'input-box');
+            candidateItems.positionInputBox.setAttribute('name', 'position');
+            candidateItems.positionInputBox.setAttribute('required', 'required');
+            candidateItems.positionInputBox.innerHTML = (
+                '<option value="Grade 10 Representative">Grade 10 Representative</option>' +
+                '<option value="Grade 11 Representative">Grade 11 Representative</option>' +
+                '<option value="Grade 12 Representative">Grade 12 Representative</option>' +
+                '<option value="Social Media Manager Apprentice">Social Media Manager Apprentice</option>' +
+                '<option value="Physical Artist Apprentice">Physical Artist Apprentice</option>' +
+                '<option value="Videographer Apprentice">Videographer Apprentice</option>'
+            );
 
 
-            candidateItems.messageDiv
+            // set attributes for message input
+            candidateItems.messagePrompt.setAttribute('class', 'input-prompt');
+            candidateItems.messagePrompt.innerHTML = '<b>Message: </b>';
+
+            candidateItems.messageInputBox.setAttribute('class', 'input-box');
+            candidateItems.messageInputBox.setAttribute('type', 'text');
+            candidateItems.messageInputBox.setAttribute('maxlength', '200');
+            candidateItems.messageInputBox.setAttribute('required', 'required');
 
 
-            candidateItems.imageDiv
+            // set attributes for image input
+            candidateItems.imagePrompt.setAttribute('class', 'input-prompt');
+            candidateItems.imagePrompt.innerHTML = '<b>Image: </b>';
 
+            candidateItems.imageInputBox.setAttribute('class', 'input-box');
+            candidateItems.imageInputBox.setAttribute('type', 'file');
+            candidateItems.imageInputBox.setAttribute('accept', 'image/*');
+            candidateItems.imageInputBox.setAttribute('required', 'required');
 
 
 
@@ -161,6 +204,9 @@ class Candidate {
             candidateItems.inputDiv.appendChild(candidateItems.firstNameDiv);
             candidateItems.inputDiv.appendChild(candidateItems.lastNameDiv);
             candidateItems.inputDiv.appendChild(candidateItems.gradeDiv);
+            candidateItems.inputDiv.appendChild(candidateItems.positionDiv);
+            candidateItems.inputDiv.appendChild(candidateItems.messageDiv);
+            candidateItems.inputDiv.appendChild(candidateItems.imageDiv);
 
             candidateItems.firstNameDiv.appendChild(candidateItems.firstNamePrompt);
             candidateItems.firstNameDiv.appendChild(candidateItems.firstNameInputBox);
@@ -171,34 +217,22 @@ class Candidate {
             candidateItems.gradeDiv.appendChild(candidateItems.gradePrompt);
             candidateItems.gradeDiv.appendChild(candidateItems.gradeInputBox);
 
-            // create options for grade choices
-            let option1 = document.createElement('option');
-            let option2 = document.createElement('option');
-            let option3 = document.createElement('option');
-            let option4 = document.createElement('option');
+            candidateItems.positionDiv.appendChild(candidateItems.positionPrompt);
+            candidateItems.positionDiv.appendChild(candidateItems.positionInputBox);
+
+            candidateItems.messageDiv.appendChild(candidateItems.messagePrompt);
+            candidateItems.messageDiv.appendChild(candidateItems.messageInputBox);
+
+            candidateItems.imageDiv.appendChild(candidateItems.imagePrompt);
+            candidateItems.imageDiv.appendChild(candidateItems.imageInputBox);
             
-            option1.setAttribute('value', '9');
-            option2.setAttribute('value', '10');
-            option3.setAttribute('value', '11');
-            option4.setAttribute('value', '12');
-
-            option1.innerHTML = '9';
-            option2.innerHTML = '10';
-            option3.innerHTML = '11';
-            option4.innerHTML = '12';
-
-            candidateItems.gradeInputBox.appendChild(option1);
-            candidateItems.gradeInputBox.appendChild(option2);
-            candidateItems.gradeInputBox.appendChild(option3);
-            candidateItems.gradeInputBox.appendChild(option4);
 
 
+            // add candidate group to dictionary of candidate divs
+            // Candidate.inputDivs['candidate' + i] = candidateItems;
 
-
-
-
-
-            Candidate.inputDivs['candidate' + i] = candidateItems;
+            // make the class object here
+            new Candidate(candidateItems);
         }
     }
 }
