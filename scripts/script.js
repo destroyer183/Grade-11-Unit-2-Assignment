@@ -32,45 +32,80 @@ class Candidate {
     // this will be the function that will verify and adjust the inputted data
     verifyData() {
 
+        console.log('Data is being verified and re-formatted.');
+
         return;
     }
 
     putErrorMessage() {
 
-        let emptyFound = false;
+        let errorFound = false;
 
-        // determine which inputs have no input, and put a prompt for the user to give an input
-        for (let input of this.inputReferences) {
-            if (input.value == '') {
+        // check to make sure all fields are inputted
+        for (let input of Object.values(this.inputReferences)) {
 
-                emptyFound = true;
+            if (input.value == '' || (input.type == 'select' && input.value == 'null')) {
 
+                this.candidateDiv[input.name].innerHTML = 'Please fill out this field.';
+                this.candidateDiv[input.name].style.display = 'initial';
 
+                errorFound = true;
 
+            } else {
+                this.candidateDiv[input.name].style.display = 'none';
             }
         }
+
+        // check to see if there are any special characters in the first & last name inputs
+        for (let character of '!@#$%^&*()_=+[]{}\\|;:,<>/?') {
+
+            if (this.inputReferences.firstNameInput.value != '' && this.inputReferences.firstNameInput.value.indexOf(character) != -1) {
+
+                this.candidateDiv['firstNameError'].innerHTML = 'First name cannot contain special characters.';
+                this.candidateDiv['firstNameError'].style.display = 'initial';
+
+                this.inputReferences.firstNameInput.value = '';
+
+                errorFound = true;
+            } 
+
+            if (this.inputReferences.lastNameInput.value != '' && this.inputReferences.lastNameInput.value.indexOf(character) != -1) {
+
+                this.candidateDiv['lastNameError'].innerHTML = 'Last name cannot contain special characters.';
+                this.candidateDiv['lastNameError'].style.display = 'initial';
+
+                this.inputReferences.lastNameInput.value = '';
+
+                errorFound = true;
+            }
+        }
+
+        // check for mismatching grade number in the grade input and the position input (i.e. a grade 9 student can't be the grade 12 rep)
+        if (
+            (this.inputReferences.positionInput.value === 'Grade 10 Representative' && this.inputReferences.gradeInput.value != 'null' && this.inputReferences.gradeInput.value != '10') ||
+            (this.inputReferences.positionInput.value === 'Grade 11 Representative' && this.inputReferences.gradeInput.value != 'null' && this.inputReferences.gradeInput.value != '11') ||
+            (this.inputReferences.positionInput.value === 'Grade 12 Representative' && this.inputReferences.gradeInput.value != 'null' && this.inputReferences.gradeInput.value != '12')
+        ) {
+
+            this.candidateDiv['gradeError'].innerHTML = 'Mismatching grade with positon input.';
+            this.candidateDiv['gradeError'].style.display = 'initial';
+
+            this.candidateDiv['positionError'].innerHTML = 'Mismatching grade with grade input.';
+            this.candidateDiv['positionError'].style.display = 'initial';
+
+            errorFound = true;
+        }
+
+        return errorFound;
     }
 
     // this will be the function that is called when the user submits data
     submitData() {
-        console.log('this is ' + this.candidateDiv.divHeaderSpan.innerHTML);
 
-        // check to make sure all fields are inputted
-        if (!(
-            this.inputReferences.firstNameInput.value && 
-            this.inputReferences.lastNameInput.value && 
-            this.inputReferences.gradeInput.value != 'null' && 
-            this.inputReferences.positionInput.value != 'null' && 
-            this.inputReferences.messageInput.value && 
-            this.inputReferences.imageInput.value
-        )) {
-
-            // put error message
-
-            return;
-        }
-
-        // verify that inputted data follows follows input constraints
+        // check to see if there are any errors in the inputs
+        if (this.putErrorMessage()) {return;}
+        
+        // reformat the inputted data
         this.verifyData();
 
         // update input box information and submission state image
@@ -105,32 +140,32 @@ class Candidate {
                 firstNameDiv: document.createElement('div'),        // div to hold this input group
                 firstNamePrompt: document.createElement('span'),    // first name input prompt
                 firstNameInputBox: document.createElement('input'), // first name input box
-                firstNameError: document.createElement('span'),     // span for error message
+                'firstNameError': document.createElement('span'),   // span for error message
 
                 lastNameDiv: document.createElement('div'),        // div to hold this input group
                 lastNamePrompt: document.createElement('span'),    // last name input prompt
                 lastNameInputBox: document.createElement('input'), // last name input box
-                lastNameError: document.createElement('span'),     // span for error message
+                'lastNameError': document.createElement('span'),   // span for error message
 
                 gradeDiv: document.createElement('div'),         // div to hold this input group
                 gradePrompt: document.createElement('span'),     // grade input prompt
                 gradeInputBox: document.createElement('select'), // grade input box
-                gradeError: document.createElement('span'),      // span for error message
+                'gradeError': document.createElement('span'),    // span for error message
 
                 positionDiv: document.createElement('div'),         // div to hold this input group
                 positionPrompt: document.createElement('span'),     // position input prompt
                 positionInputBox: document.createElement('select'), // position input box
-                positionError: document.createElement('span'),      // span for error message
+                'positionError': document.createElement('span'),    // span for error message
 
                 messageDiv: document.createElement('div'),        // div to hold this input group
                 messagePrompt: document.createElement('span'),    // message input prompt
                 messageInputBox: document.createElement('input'), // message input box
-                messageError: document.createElement('span'),     // span for error message
+                'messageError': document.createElement('span'),   // span for error message
 
                 imageDiv: document.createElement('div'),        // div to hold this input group
                 imagePrompt: document.createElement('span'),    // image input prompt
                 imageInputBox: document.createElement('input'), // image input box
-                imageError: document.createElement('span'),     // span for error message
+                'imageError': document.createElement('span'),   // span for error message
 
 
                 buttonDiv: document.createElement('div'),       // div to hold the buttons
@@ -179,11 +214,12 @@ class Candidate {
 
             candidateItems.firstNameInputBox.setAttribute('class', 'input-box');
             candidateItems.firstNameInputBox.setAttribute('type', 'text');
+            candidateItems.firstNameInputBox.setAttribute('name', 'firstNameError');
             candidateItems.firstNameInputBox.setAttribute('maxlength', '50');
             candidateItems.firstNameInputBox.setAttribute('required', 'required');
 
-            candidateItems.firstNameError.setAttribute('class', 'error-message');
-            candidateItems.firstNameError.innerHTML = 'Please fill out this field.';
+            candidateItems['firstNameError'].setAttribute('class', 'error-message');
+            candidateItems['firstNameError'].innerHTML = 'Please fill out this field.';
 
 
 
@@ -194,11 +230,12 @@ class Candidate {
 
             candidateItems.lastNameInputBox.setAttribute('class', 'input-box');
             candidateItems.lastNameInputBox.setAttribute('type', 'text');
+            candidateItems.lastNameInputBox.setAttribute('name', 'lastNameError');
             candidateItems.lastNameInputBox.setAttribute('maxlength', '50');
             candidateItems.lastNameInputBox.setAttribute('required', 'required');
 
-            candidateItems.lastNameError.setAttribute('class', 'error-message');
-            candidateItems.lastNameError.innerHTML = 'Please fill out this field.';
+            candidateItems['lastNameError'].setAttribute('class', 'error-message');
+            candidateItems['lastNameError'].innerHTML = 'Please fill out this field.';
 
 
             // set attributes for grade input
@@ -206,7 +243,7 @@ class Candidate {
             candidateItems.gradePrompt.innerHTML = '<b>Grade: </b>';
             
             candidateItems.gradeInputBox.setAttribute('class', 'input-box');
-            candidateItems.gradeInputBox.setAttribute('name', 'grade');
+            candidateItems.gradeInputBox.setAttribute('name', 'gradeError');
             candidateItems.gradeInputBox.setAttribute('required', 'required');
             candidateItems.gradeInputBox.innerHTML = (
                 '<option value="">Choose an option</option>' +
@@ -216,8 +253,8 @@ class Candidate {
                 '<option value="12">12</option>'
             );
 
-            candidateItems.gradeError.setAttribute('class', 'error-message');
-            candidateItems.gradeError.innerHTML = 'Please fill out this field.';
+            candidateItems['gradeError'].setAttribute('class', 'error-message');
+            candidateItems['gradeError'].innerHTML = 'Please fill out this field.';
 
 
             // set attributes for position input
@@ -225,7 +262,7 @@ class Candidate {
             candidateItems.positionPrompt.innerHTML = '<b>Position: </b>';
 
             candidateItems.positionInputBox.setAttribute('class', 'input-box');
-            candidateItems.positionInputBox.setAttribute('name', 'position');
+            candidateItems.positionInputBox.setAttribute('name', 'positionError');
             candidateItems.positionInputBox.setAttribute('required', 'required');
             candidateItems.positionInputBox.innerHTML = (
                 '<option value="">Choose an option</option>' +
@@ -237,8 +274,8 @@ class Candidate {
                 '<option value="Videographer Apprentice">Videographer Apprentice</option>'
             );
 
-            candidateItems.positionError.setAttribute('class', 'error-message');
-            candidateItems.positionError.innerHTML = 'Please fill out this field.';
+            candidateItems['positionError'].setAttribute('class', 'error-message');
+            candidateItems['positionError'].innerHTML = 'Please fill out this field.';
 
 
             // set attributes for message input
@@ -247,11 +284,12 @@ class Candidate {
 
             candidateItems.messageInputBox.setAttribute('class', 'input-box');
             candidateItems.messageInputBox.setAttribute('type', 'text');
+            candidateItems.messageInputBox.setAttribute('name', 'messageError');
             candidateItems.messageInputBox.setAttribute('maxlength', '200');
             candidateItems.messageInputBox.setAttribute('required', 'required');
 
-            candidateItems.messageError.setAttribute('class', 'error-message');
-            candidateItems.messageError.innerHTML = 'Please fill out this field.';
+            candidateItems['messageError'].setAttribute('class', 'error-message');
+            candidateItems['messageError'].innerHTML = 'Please fill out this field.';
 
 
             // set attributes for image input
@@ -260,16 +298,17 @@ class Candidate {
 
             candidateItems.imageInputBox.setAttribute('class', 'input-box');
             candidateItems.imageInputBox.setAttribute('type', 'file');
+            candidateItems.imageInputBox.setAttribute('name', 'imageError');
             candidateItems.imageInputBox.setAttribute('accept', 'image/*');
             candidateItems.imageInputBox.setAttribute('required', 'required');
 
-            candidateItems.imageError.setAttribute('class', 'error-message');
-            candidateItems.imageError.innerHTML = 'Please fill out this field.';
+            candidateItems['imageError'].setAttribute('class', 'error-message');
+            candidateItems['imageError'].innerHTML = 'Please fill out this field.';
 
 
             // set attributes for buttons
             candidateItems.submitButton.setAttribute('class', 'submission-button');
-            let submitButtonFunction = 'Candidate.candidates["candidate' + i + '"].submitData()';
+            let submitButtonFunction = 'Candidate.candidates[' + i + '].submitData()';
             candidateItems.submitButton.setAttribute('onclick', submitButtonFunction);
             candidateItems.submitButton.innerHTML = 'Submit';
 
@@ -304,33 +343,33 @@ class Candidate {
 
             candidateItems.firstNameDiv.appendChild(candidateItems.firstNamePrompt);
             candidateItems.firstNameDiv.appendChild(candidateItems.firstNameInputBox);
-            candidateItems.firstNameError.style.left = candidateItems.firstNameInputBox.offsetLeft + 'px';
-            candidateItems.firstNameDiv.appendChild(candidateItems.firstNameError);
+            candidateItems['firstNameError'].style.left = candidateItems.firstNameInputBox.offsetLeft + 'px';
+            candidateItems.firstNameDiv.appendChild(candidateItems['firstNameError']);
 
             candidateItems.lastNameDiv.appendChild(candidateItems.lastNamePrompt);
             candidateItems.lastNameDiv.appendChild(candidateItems.lastNameInputBox);
-            candidateItems.lastNameError.style.left = candidateItems.lastNameInputBox.offsetLeft + 'px';
-            candidateItems.lastNameDiv.appendChild(candidateItems.lastNameError);
+            candidateItems['lastNameError'].style.left = candidateItems.lastNameInputBox.offsetLeft + 'px';
+            candidateItems.lastNameDiv.appendChild(candidateItems['lastNameError']);
 
             candidateItems.gradeDiv.appendChild(candidateItems.gradePrompt);
             candidateItems.gradeDiv.appendChild(candidateItems.gradeInputBox);
-            candidateItems.gradeError.style.left = candidateItems.gradeInputBox.offsetLeft + 'px';
-            candidateItems.gradeDiv.appendChild(candidateItems.gradeError);
+            candidateItems['gradeError'].style.left = candidateItems.gradeInputBox.offsetLeft + 'px';
+            candidateItems.gradeDiv.appendChild(candidateItems['gradeError']);
 
             candidateItems.positionDiv.appendChild(candidateItems.positionPrompt);
             candidateItems.positionDiv.appendChild(candidateItems.positionInputBox);
-            candidateItems.positionError.style.left = candidateItems.positionInputBox.offsetLeft + 'px';
-            candidateItems.positionDiv.appendChild(candidateItems.positionError);
+            candidateItems['positionError'].style.left = candidateItems.positionInputBox.offsetLeft + 'px';
+            candidateItems.positionDiv.appendChild(candidateItems['positionError']);
 
             candidateItems.messageDiv.appendChild(candidateItems.messagePrompt);
             candidateItems.messageDiv.appendChild(candidateItems.messageInputBox);
-            candidateItems.messageError.style.left = candidateItems.messageInputBox.offsetLeft + 'px';
-            candidateItems.messageDiv.appendChild(candidateItems.messageError);
+            candidateItems['messageError'].style.left = candidateItems.messageInputBox.offsetLeft + 'px';
+            candidateItems.messageDiv.appendChild(candidateItems['messageError']);
 
             candidateItems.imageDiv.appendChild(candidateItems.imagePrompt);
             candidateItems.imageDiv.appendChild(candidateItems.imageInputBox);
-            candidateItems.imageError.style.left = candidateItems.imageInputBox.offsetLeft + 'px';
-            candidateItems.imageDiv.appendChild(candidateItems.imageError);
+            candidateItems['imageError'].style.left = candidateItems.imageInputBox.offsetLeft + 'px';
+            candidateItems.imageDiv.appendChild(candidateItems['imageError']);
 
 
             candidateItems.buttonDiv.appendChild(candidateItems.submitButton);
