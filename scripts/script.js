@@ -8,7 +8,7 @@
 
 class Candidate {
 
-    static candidates ={};
+    static candidates = [];
 
     constructor(candidateDiv) {
 
@@ -25,8 +25,8 @@ class Candidate {
         };
 
 
-        // add candidate to class candidate dictionary
-        Candidate.candidates['candidate' + Object.keys(Candidate.candidates).length] = this;
+        // add candidate to class candidate array
+        Candidate.candidates.push(this);
     }
 
     // this will be the function that will verify and adjust the inputted data
