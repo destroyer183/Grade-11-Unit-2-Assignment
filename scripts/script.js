@@ -29,6 +29,10 @@ class Candidate {
 
     constructor(candidateDiv) {
 
+        this.completed = false;
+
+        this.supress = false;
+
         this.candidateDiv = candidateDiv;
 
         this.candidateInfo = {
@@ -183,7 +187,7 @@ class Candidate {
     submitData() {
 
         // check to see if there are any errors in the inputs
-        if (this.putErrorMessage()) {return;}
+        if (this.putErrorMessage()) {return true;}
 
         // reformat the inputted data
         this.verifyData();
@@ -224,10 +228,13 @@ class Candidate {
             this.inputReferences[key].style.display = 'none';
         }
 
+        // update variable so that the candidate is considered completed
+        this.completed = true;
+
         // update input field size
         this.candidateDiv.inputDiv.style.maxHeight = this.candidateDiv.inputDiv.scrollHeight + 'px';
 
-        return;
+        return false;
     }
 
 
@@ -238,6 +245,10 @@ class Candidate {
         // reset prompt text
         let candidateInfoKeys = Object.keys(this.candidateInfo);
         let candidateTextKeys = Object.keys(this.candidateDiv.displayText);
+
+        // reset header text
+        let endIndex = this.candidateDiv.divHeaderSpan.innerHTML.lastIndexOf('>') + 1;
+        this.candidateDiv.divHeaderSpan.innerHTML = this.candidateDiv.divHeaderSpan.innerHTML.substring(0, endIndex) + 'Not Submitted';
 
         for (let i = 0; i < candidateInfoKeys.length; i++) {
 
@@ -259,11 +270,18 @@ class Candidate {
         this.candidateDiv.editButton.style.display = 'none';
         this.candidateDiv.saveButton.style.display = 'inline-block';
         this.candidateDiv.cancelButton.style.display = 'inline-block';
+        
+        // update variable to show that the candidate is not complete
+        this.completed = false;
+
+        // update submission state image to show that the candidate is not complete
+        this.candidateDiv.submissionStateImage.setAttribute('src', 'assets/crossmark.png');
+
+        // update variable to prevent the user from closing this input box until they are done editing
+        this.supress = true;
 
         // update input field size
         this.candidateDiv.inputDiv.style.maxHeight = this.candidateDiv.inputDiv.scrollHeight + 'px';
-
-
     }
 
 
@@ -272,12 +290,14 @@ class Candidate {
     saveData() {
 
         // call 'submitData' function
-        this.submitData();
+        if (this.submitData()) {return;}
 
         // hide buttons
         this.candidateDiv.saveButton.style.display = 'none';
         this.candidateDiv.cancelButton.style.display = 'none';
 
+        // update variable to allow the user to open or close this input box
+        this.supress = false;
     }
 
 
@@ -285,14 +305,42 @@ class Candidate {
     // this function will be called when the user cancels the info edit they are making
     cancelDataEdit() {
 
-        // put original text in input boxes
+        // put original text in prompt text, and hide input boxes
+        let candidateInfoKeys = Object.keys(this.candidateInfo);
+        let inputReferenceKeys = Object.keys(this.inputReferences);
+        let candidateTextKeys = Object.keys(this.candidateDiv.displayText);
 
-        // hide input boxes
+        for (let i = 0; i < candidateInfoKeys.length; i++) {
 
-        // put inputted text into text containers
+            if (candidateInfoKeys[i] == 'message') {
+                this.candidateDiv.messageContainer.style.display = 'initial';
+                this.inputReferences[inputReferenceKeys[i]].style.display = 'none';
+                continue;
+            }
+
+            this.candidateDiv.displayText[candidateTextKeys[i]].innerHTML = this.candidateInfo[candidateInfoKeys[i]];
+            this.inputReferences[inputReferenceKeys[i]].style.display = 'none';
+        }
 
         // remove 'save' and 'cancel' buttons and add 'edit' button
+        this.candidateDiv.saveButton.style.display = 'none';
+        this.candidateDiv.cancelButton.style.display = 'none';
+        this.candidateDiv.editButton.style.display = 'inline-block';
 
+        // update input field size
+        this.candidateDiv.inputDiv.style.maxHeight = this.candidateDiv.inputDiv.scrollHeight + 'px';
+
+        // update variable to allow the user to open or close this input box
+        this.supress = false;
+
+        // update variable to show that the candidate is complete
+        this.completed = true;
+
+        // update input box information and submission state image
+        this.candidateDiv.divHeaderSpan.innerHTML = this.candidateDiv.divHeaderSpan.innerHTML.replaceAll('Not Submitted', (this.inputReferences.lastNameInput.value + ', ' + this.inputReferences.firstNameInput.value));
+
+        this.candidateDiv.submissionStateImage.setAttribute('src', 'assets/checkmark.png');
+        
     }
 
 
@@ -606,6 +654,7 @@ class Candidate {
 
             // give div collapsible functionalities
             candidateItems.headerDiv.addEventListener('click', function() {
+                if (temp.supress) {return;}
                 let content = candidateItems.inputDiv;
                 if (content.style.maxHeight) {
                     candidateItems.ddArrow.setAttribute('src', 'assets/ddarrow closed.png');
