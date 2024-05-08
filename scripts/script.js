@@ -26,6 +26,7 @@ String.prototype.contains = function (characters) {
 class Candidate {
 
     static candidates = [];
+    static submitted = 0;
 
     constructor(candidateDiv) {
 
@@ -230,9 +231,16 @@ class Candidate {
 
         // update variable so that the candidate is considered completed
         this.completed = true;
+        Candidate.submitted++;
+
+        // update the information on the info bar
+        Candidate.updateInfoBar();
 
         // update input field size
         this.candidateDiv.inputDiv.style.maxHeight = this.candidateDiv.inputDiv.scrollHeight + 'px';
+
+        // update input box width
+        adjustDivs();
 
         return false;
     }
@@ -273,6 +281,10 @@ class Candidate {
         
         // update variable to show that the candidate is not complete
         this.completed = false;
+        Candidate.submitted--;
+
+        // update the information on the info bar
+        Candidate.updateInfoBar();
 
         // update submission state image to show that the candidate is not complete
         this.candidateDiv.submissionStateImage.setAttribute('src', 'assets/crossmark.png');
@@ -335,12 +347,17 @@ class Candidate {
 
         // update variable to show that the candidate is complete
         this.completed = true;
+        Candidate.submitted++;
+
+        // update the information on the info bar
+        Candidate.updateInfoBar();
+
+        // update input box width
+        adjustDivs();
 
         // update input box information and submission state image
         this.candidateDiv.divHeaderSpan.innerHTML = this.candidateDiv.divHeaderSpan.innerHTML.replaceAll('Not Submitted', (this.inputReferences.lastNameInput.value + ', ' + this.inputReferences.firstNameInput.value));
-
         this.candidateDiv.submissionStateImage.setAttribute('src', 'assets/checkmark.png');
-        
     }
 
 
@@ -418,7 +435,16 @@ class Candidate {
                 position: candidateItems.positionContainer,
                 message: candidateItems.messageContainer,
                 image: candidateItems.imageContainer
-            }
+            };
+
+            candidateItems.inputContainers = {
+                firstName: candidateItems.firstNameDiv,
+                lastName: candidateItems.lastNameDiv,
+                grade: candidateItems.gradeDiv,
+                position: candidateItems.positionDiv,
+                message: candidateItems.messageDiv,
+                image: candidateItems.imageDiv
+            };
 
 
             // set attributes of header elements
@@ -654,30 +680,79 @@ class Candidate {
 
             // give div collapsible functionalities
             candidateItems.headerDiv.addEventListener('click', function() {
+
                 if (temp.supress) {return;}
+
                 let content = candidateItems.inputDiv;
+
+                // close div
                 if (content.style.maxHeight) {
-                    candidateItems.ddArrow.setAttribute('src', 'assets/ddarrow closed.png');
+
                     content.style.maxHeight = null;
+
+                    // hide input divs
+                    for (let key of Object.keys(candidateItems.inputContainers)) {
+
+                        candidateItems.inputContainers[key].style.display = 'none';
+                    }
+
+                    candidateItems.ddArrow.setAttribute('src', 'assets/ddarrow closed.png');
+
                     // disable inputs
                     for (let input of Object.values(temp.inputReferences)) {
+
                         input.disabled = true;
                     }
 
+                // open div
                 } else {
+
+                    // display input divs
+                    for (let key of Object.keys(candidateItems.inputContainers)) {
+
+                        candidateItems.inputContainers[key].style.display = 'flex';
+                    }
+
                     content.style.maxHeight = content.scrollHeight + 'px';
+
+                    content.style.width = candidateItems.inputDiv.offsetWidth;
+
                     candidateItems.ddArrow.setAttribute('src', 'assets/ddarrow open.png');
+
                     // enable inputs
                     let inputs = Object.values(temp.inputReferences);
+
                     for (let input of inputs) {
+
                         input.disabled = false;
                     }
                 }
             });
         }
     }
-}
 
+
+
+    // function to update the info bar depending on the candidates submitted
+    static updateInfoBar() {
+
+        let candidateCounter = document.getElementById('candidate-counter');
+        let endInputButton = document.getElementById('end-candidate-input');
+
+        candidateCounter.innerText = Candidate.submitted + '/' + Candidate.candidates.length;
+
+        if (Candidate.submitted === Candidate.candidates.length) {
+
+            candidateCounter.style.display = 'none';
+            endInputButton.style.display = 'block';
+
+        } else {
+
+            candidateCounter.style.display = 'block';
+            endInputButton.style.display = 'none';
+        }
+    }
+}
 
 
 
@@ -687,10 +762,27 @@ function start() {
     // make the candidate boxes
     Candidate.createInputPage();
 
+    // update info in info bar
+    Candidate.updateInfoBar();
+
+    // adjust the div size to make them all the same width
     adjustDivs();
+
+    // adjust placeholder div size
+    let infoBarHeight = document.getElementById('info-bar').offsetHeight;
+    document.getElementById('info-bar-placeholder').style.height = infoBarHeight + 'px';
+
+    for (let candidate of Candidate.candidates) {
+
+        console.log('offset width: ' + candidate.candidateDiv.candidateDiv.offsetWidth);
+    }
+
+    console.log('full width: ' + document.getElementById('input-master-div').offsetWidth);
 }
 
-// I don't call this function 'start' because it isn't just called once when the page loads, but whenever the div text needs to be updated.
+
+
+// function to adjust the size of the divs
 function adjustDivs() {
 
     let candidates = document.getElementsByClassName('candidate-div');
@@ -699,15 +791,17 @@ function adjustDivs() {
 
     for (let candidate of candidates) {
 
-        if (candidate.offsetWidth > largestDiv) {
-            largestDiv = candidate.offsetWidth
-        }
-
         candidate.style.display = 'block';
         candidate.style.width = '100%';
 
+
+        console.log('offset width: ' + candidate.offsetWidth);
+
+        if (candidate.offsetWidth > largestDiv) {
+            largestDiv = candidate.offsetWidth;
+        }
     }
 
     // update master div size
-    document.getElementById('input-master-div').style.width = largestDiv;
+    // document.getElementById('input-master-div').style.width = largestDiv + 'px';
 }

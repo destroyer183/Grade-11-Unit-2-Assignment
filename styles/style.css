@@ -7,24 +7,40 @@ body {
     text-align: center;
 }
 
-#header {
-    background-color: lightgray;
-    font-size: 5rem;
-    margin: 0 auto;
-    padding: 1rem 0;
+#info-bar {
+    background-color: lightgrey;
     border-bottom: black 0.2rem solid;
     position: fixed;
+    align-items: center;
+    z-index: 10;
     width: 100%;
     top: 0;
     left: 0;
 }
 
-#header-placeholder {
-    color: white;
+#header {
     font-size: 5rem;
     margin: 0 auto;
-    margin-bottom: 3rem;
-    padding: 1rem 0;
+    padding-top: 1rem;
+}
+
+#candidate-counter {
+    font-size: 2.5rem;
+    margin: 1rem 0;
+}
+
+#end-candidate-input {
+    margin: 1rem 0;
+    padding: 0 1rem;
+    font-size: 2.5rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 2rem;
+    cursor: pointer;
+}
+
+#info-bar-placeholder {
+    background-color: pink;
 }
 
 #input-master-div {
@@ -70,19 +86,21 @@ body {
 .input-div {
     font-size: 1.75rem;
     overflow: hidden;
+    justify-content: left;
     max-height: 0;
     transition: max-height 0.2s ease-out;
 }
 
 .input-group {
+    display: none;
     margin: 1.75rem 0;
-    display: flex;
     justify-content: left;
     position: relative;
 }
 
 .input-prompt {
     padding: 0 1rem;
+    justify-content: left;
 }
 
 .input-container {
@@ -118,6 +136,15 @@ body {
     position: absolute;
     top: -1rem;
     display: none;
+}
+
+.grow { 
+    cursor: pointer;
+    transition: all .2s ease-in-out; 
+}
+
+.grow:hover { 
+    transform: scale(1.1); 
 }
 
 
