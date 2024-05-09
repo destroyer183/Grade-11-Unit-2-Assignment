@@ -27,6 +27,7 @@ class Candidate {
 
     static candidates = [];
     static submitted = 0;
+    static baseWidth = 0;
 
     constructor(candidateDiv) {
 
@@ -236,11 +237,13 @@ class Candidate {
         // update the information on the info bar
         Candidate.updateInfoBar();
 
-        // update input field size
-        this.candidateDiv.inputDiv.style.maxHeight = this.candidateDiv.inputDiv.scrollHeight + 'px';
-
-        // update input box width
+        // adjust the size of the candidate divs
         adjustDivs();
+
+        // update input field size
+        this.candidateDiv.inputDiv.style.width = this.candidateDiv.inputDiv.scrollWidth + 'px';
+        this.candidateDiv.candidateDiv.style.width = this.candidateDiv.inputDiv.scrollWidth + 'px';
+        this.candidateDiv.inputDiv.style.maxHeight = this.candidateDiv.inputDiv.scrollHeight + 'px';
 
         return false;
     }
@@ -688,13 +691,11 @@ class Candidate {
                 // close div
                 if (content.style.maxHeight) {
 
-                    content.style.maxHeight = null;
-
                     // hide input divs
-                    for (let key of Object.keys(candidateItems.inputContainers)) {
 
-                        candidateItems.inputContainers[key].style.display = 'none';
-                    }
+                    candidateItems.candidateDiv.style.width = temp.initialWidth - 16 + 'px';
+
+                    content.style.maxHeight = null;
 
                     candidateItems.ddArrow.setAttribute('src', 'assets/ddarrow closed.png');
 
@@ -707,15 +708,11 @@ class Candidate {
                 // open div
                 } else {
 
-                    // display input divs
-                    for (let key of Object.keys(candidateItems.inputContainers)) {
-
-                        candidateItems.inputContainers[key].style.display = 'flex';
-                    }
+                    temp.initialWidth = candidateItems.candidateDiv.offsetWidth;
 
                     content.style.maxHeight = content.scrollHeight + 'px';
 
-                    content.style.width = candidateItems.inputDiv.offsetWidth;
+                    candidateItems.candidateDiv.style.width = content.scrollWidth + 'px';
 
                     candidateItems.ddArrow.setAttribute('src', 'assets/ddarrow open.png');
 
@@ -766,7 +763,7 @@ function start() {
     Candidate.updateInfoBar();
 
     // adjust the div size to make them all the same width
-    adjustDivs();
+    initialAdjustDivs();
 
     // adjust placeholder div size
     let infoBarHeight = document.getElementById('info-bar').offsetHeight;
@@ -791,9 +788,6 @@ function adjustDivs() {
 
     for (let candidate of candidates) {
 
-        candidate.style.display = 'block';
-        candidate.style.width = '100%';
-
 
         console.log('offset width: ' + candidate.offsetWidth);
 
@@ -802,6 +796,46 @@ function adjustDivs() {
         }
     }
 
-    // update master div size
-    // document.getElementById('input-master-div').style.width = largestDiv + 'px';
+    for (let candidate of candidates) {
+
+        candidate.style.display = 'block';
+        candidate.style.width = largestDiv - 16 + 'px';
+    }
+
+    Candidate.baseWidth = largestDiv + 'px';
 }
+
+
+
+// slightly different function that only gets called when the page loads
+function initialAdjustDivs() {
+
+    let candidates = document.getElementsByClassName('candidate-div');
+
+    let largestDiv = 0;
+
+    for (let candidate of candidates) {
+
+        console.log('offset width: ' + candidate.offsetWidth);
+
+        if (candidate.offsetWidth > largestDiv) {
+            largestDiv = candidate.offsetWidth;
+        }
+    }
+
+    for (let candidate of candidates) {
+
+        candidate.style.display = 'block';
+        candidate.style.width = largestDiv + 65 + 'px';
+    }
+
+    for (let candidate of Candidate.candidates) {
+
+        candidate.initialWidth = candidate.candidateDiv.inputDiv.style.width + 'px';
+
+        candidate.candidateDiv.inputDiv.style.display = 'block';
+    }
+
+    Candidate.baseWidth = largestDiv + 65 + 'px';
+}
+

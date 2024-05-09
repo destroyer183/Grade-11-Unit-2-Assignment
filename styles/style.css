@@ -58,6 +58,7 @@ body {
 }
 
 .header-div {
+    padding-right: 0.5rem;
     display: flex;
     justify-content: left;
     align-items: center;
@@ -84,6 +85,7 @@ body {
 }
 
 .input-div {
+    display: none;
     font-size: 1.75rem;
     overflow: hidden;
     justify-content: left;
@@ -92,10 +94,11 @@ body {
 }
 
 .input-group {
-    display: none;
+    display: flex;
     margin: 1.75rem 0;
     justify-content: left;
     position: relative;
+    text-align: left;
 }
 
 .input-prompt {
