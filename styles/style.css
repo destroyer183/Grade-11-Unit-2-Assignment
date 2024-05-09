@@ -47,9 +47,11 @@ body {
     display: inline-block;
     margin: 0 auto;
     align-items: center;
+    padding: 0 2rem;
 }
 
 .candidate-div {
+    max-width: 100%;
     font-size: 2rem;
     background-color: dodgerblue;
     margin: 2rem auto;
@@ -85,6 +87,7 @@ body {
 }
 
 .input-div {
+    max-width: 100%;
     display: none;
     font-size: 1.75rem;
     overflow: hidden;
@@ -102,6 +105,7 @@ body {
 }
 
 .input-prompt {
+    max-width: 100%;
     padding: 0 1rem;
     justify-content: left;
 }
@@ -116,6 +120,10 @@ body {
 }
 
 .paragraph-container {
+    /* white-space: normal; */
+    text-overflow: ellipsis;
+    max-width: 100%;
+    overflow-wrap: break-word;
     display: none;
     justify-content: left;
     text-align: left;

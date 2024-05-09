@@ -35,7 +35,7 @@ class Candidate {
 
         this.supress = false;
 
-        this.candidateDiv = candidateDiv;
+        this.candidateElements = candidateDiv;
 
         this.candidateInfo = {
             firstName: '',
@@ -113,7 +113,7 @@ class Candidate {
 
 
         let fullSentence = newSentence.substring(0, 1).toUpperCase() + newSentence.substring(1, newSentence.length);
-        this.candidateDiv.messageContainer.innerText = fullSentence;
+        this.candidateElements.messageContainer.innerText = fullSentence;
         this.inputReferences.messageInput.value = fullSentence;
         return;
     }
@@ -130,13 +130,13 @@ class Candidate {
 
             if (input.value == '' || (input.type == 'select' && input.value == 'null')) {
 
-                this.candidateDiv[input.name].innerHTML = 'Please fill out this field.';
-                this.candidateDiv[input.name].style.display = 'initial';
+                this.candidateElements[input.name].innerHTML = 'Please fill out this field.';
+                this.candidateElements[input.name].style.display = 'initial';
 
                 errorFound = true;
 
             } else {
-                this.candidateDiv[input.name].style.display = 'none';
+                this.candidateElements[input.name].style.display = 'none';
             }
         }
 
@@ -145,8 +145,8 @@ class Candidate {
 
             if (this.inputReferences.firstNameInput.value != '' && this.inputReferences.firstNameInput.value.indexOf(character) != -1) {
 
-                this.candidateDiv['firstNameError'].innerHTML = 'First name cannot contain special characters.';
-                this.candidateDiv['firstNameError'].style.display = 'initial';
+                this.candidateElements['firstNameError'].innerHTML = 'First name cannot contain special characters.';
+                this.candidateElements['firstNameError'].style.display = 'initial';
 
                 this.inputReferences.firstNameInput.value = '';
 
@@ -155,8 +155,8 @@ class Candidate {
 
             if (this.inputReferences.lastNameInput.value != '' && this.inputReferences.lastNameInput.value.indexOf(character) != -1) {
 
-                this.candidateDiv['lastNameError'].innerHTML = 'Last name cannot contain special characters.';
-                this.candidateDiv['lastNameError'].style.display = 'initial';
+                this.candidateElements['lastNameError'].innerHTML = 'Last name cannot contain special characters.';
+                this.candidateElements['lastNameError'].style.display = 'initial';
 
                 this.inputReferences.lastNameInput.value = '';
 
@@ -171,11 +171,11 @@ class Candidate {
             (this.inputReferences.positionInput.value === 'Grade 12 Representative' && this.inputReferences.gradeInput.value != 'null' && this.inputReferences.gradeInput.value != '12')
         ) {
 
-            this.candidateDiv['gradeError'].innerHTML = 'Mismatching grade with positon input.';
-            this.candidateDiv['gradeError'].style.display = 'initial';
+            this.candidateElements['gradeError'].innerHTML = 'Mismatching grade with positon input.';
+            this.candidateElements['gradeError'].style.display = 'initial';
 
-            this.candidateDiv['positionError'].innerHTML = 'Mismatching grade with grade input.';
-            this.candidateDiv['positionError'].style.display = 'initial';
+            this.candidateElements['positionError'].innerHTML = 'Mismatching grade with grade input.';
+            this.candidateElements['positionError'].style.display = 'initial';
 
             errorFound = true;
         }
@@ -195,13 +195,13 @@ class Candidate {
         this.verifyData();
 
         // update input box information and submission state image
-        this.candidateDiv.divHeaderSpan.innerHTML = this.candidateDiv.divHeaderSpan.innerHTML.replaceAll('Not Submitted', (this.inputReferences.lastNameInput.value + ', ' + this.inputReferences.firstNameInput.value));
+        this.candidateElements.divHeaderSpan.innerHTML = this.candidateElements.divHeaderSpan.innerHTML.replaceAll('Not Submitted', (this.inputReferences.lastNameInput.value + ', ' + this.inputReferences.firstNameInput.value));
 
-        this.candidateDiv.submissionStateImage.setAttribute('src', 'assets/checkmark.png');
+        this.candidateElements.submissionStateImage.setAttribute('src', 'assets/checkmark.png');
         
         // change buttons that are visible
-        this.candidateDiv.submitButton.style.display = 'none';
-        this.candidateDiv.editButton.style.display = 'inline-block';
+        this.candidateElements.submitButton.style.display = 'none';
+        this.candidateElements.editButton.style.display = 'inline-block';
 
         // save information
         let candidateInfoKeys = Object.keys(this.candidateInfo);
@@ -212,16 +212,16 @@ class Candidate {
         }
 
         // update info display
-        let candidateTextKeys = Object.keys(this.candidateDiv.displayText);
+        let candidateTextKeys = Object.keys(this.candidateElements.displayText);
 
         for (let i = 0; i < candidateInfoKeys.length; i++) {
 
             if (candidateInfoKeys[i] == 'message') {
-                this.candidateDiv.messageContainer.style.display = 'flex';
+                this.candidateElements.messageContainer.style.display = 'flex';
                 continue;
             }
 
-            this.candidateDiv.displayText[candidateTextKeys[i]].innerHTML += this.candidateInfo[candidateInfoKeys[i]];
+            this.candidateElements.displayText[candidateTextKeys[i]].innerHTML += this.candidateInfo[candidateInfoKeys[i]];
         }
 
         // hide input boxes
@@ -238,12 +238,12 @@ class Candidate {
         Candidate.updateInfoBar();
 
         // adjust the size of the candidate divs
-        adjustDivs();
+        this.adjustDivs();
 
         // update input field size
-        this.candidateDiv.inputDiv.style.width = this.candidateDiv.inputDiv.scrollWidth + 'px';
-        this.candidateDiv.candidateDiv.style.width = this.candidateDiv.inputDiv.scrollWidth + 'px';
-        this.candidateDiv.inputDiv.style.maxHeight = this.candidateDiv.inputDiv.scrollHeight + 'px';
+        this.candidateElements.inputDiv.style.width = this.candidateElements.inputDiv.scrollWidth + 'px';
+        this.candidateElements.candidateDiv.style.width = this.candidateElements.inputDiv.scrollWidth + 'px';
+        this.candidateElements.inputDiv.style.maxHeight = this.candidateElements.inputDiv.scrollHeight + 'px';
 
         return false;
     }
@@ -255,20 +255,20 @@ class Candidate {
 
         // reset prompt text
         let candidateInfoKeys = Object.keys(this.candidateInfo);
-        let candidateTextKeys = Object.keys(this.candidateDiv.displayText);
+        let candidateTextKeys = Object.keys(this.candidateElements.displayText);
 
         // reset header text
-        let endIndex = this.candidateDiv.divHeaderSpan.innerHTML.lastIndexOf('>') + 1;
-        this.candidateDiv.divHeaderSpan.innerHTML = this.candidateDiv.divHeaderSpan.innerHTML.substring(0, endIndex) + 'Not Submitted';
+        let endIndex = this.candidateElements.divHeaderSpan.innerHTML.lastIndexOf('>') + 1;
+        this.candidateElements.divHeaderSpan.innerHTML = this.candidateElements.divHeaderSpan.innerHTML.substring(0, endIndex) + 'Not Submitted';
 
         for (let i = 0; i < candidateInfoKeys.length; i++) {
 
             if (candidateInfoKeys[i] == 'message') {
-                this.candidateDiv.messageContainer.style.display = 'none';
+                this.candidateElements.messageContainer.style.display = 'none';
                 continue;
             }
 
-            this.candidateDiv.displayText[candidateTextKeys[i]].innerHTML = '';
+            this.candidateElements.displayText[candidateTextKeys[i]].innerHTML = '';
         }
 
         // put input boxes back on screen
@@ -277,10 +277,7 @@ class Candidate {
             this.inputReferences[key].style.display = 'initial';
         }
 
-        // remove 'edit' button and display 'save' and 'cancel' buttons
-        this.candidateDiv.editButton.style.display = 'none';
-        this.candidateDiv.saveButton.style.display = 'inline-block';
-        this.candidateDiv.cancelButton.style.display = 'inline-block';
+        
         
         // update variable to show that the candidate is not complete
         this.completed = false;
@@ -290,13 +287,19 @@ class Candidate {
         Candidate.updateInfoBar();
 
         // update submission state image to show that the candidate is not complete
-        this.candidateDiv.submissionStateImage.setAttribute('src', 'assets/crossmark.png');
+        this.candidateElements.submissionStateImage.setAttribute('src', 'assets/crossmark.png');
 
         // update variable to prevent the user from closing this input box until they are done editing
         this.supress = true;
 
         // update input field size
-        this.candidateDiv.inputDiv.style.maxHeight = this.candidateDiv.inputDiv.scrollHeight + 'px';
+        this.candidateElements.inputDiv.style.maxHeight = this.candidateElements.inputDiv.scrollHeight + 'px';
+        this.candidateElements.candidateDiv.style.width = this.initialWidth - 16 + 'px';
+        
+        // remove 'edit' button and display 'save' and 'cancel' buttons
+        this.candidateElements.editButton.style.display = 'none';
+        this.candidateElements.saveButton.style.display = 'inline-block';
+        this.candidateElements.cancelButton.style.display = 'inline-block';
     }
 
 
@@ -308,8 +311,8 @@ class Candidate {
         if (this.submitData()) {return;}
 
         // hide buttons
-        this.candidateDiv.saveButton.style.display = 'none';
-        this.candidateDiv.cancelButton.style.display = 'none';
+        this.candidateElements.saveButton.style.display = 'none';
+        this.candidateElements.cancelButton.style.display = 'none';
 
         // update variable to allow the user to open or close this input box
         this.supress = false;
@@ -323,27 +326,27 @@ class Candidate {
         // put original text in prompt text, and hide input boxes
         let candidateInfoKeys = Object.keys(this.candidateInfo);
         let inputReferenceKeys = Object.keys(this.inputReferences);
-        let candidateTextKeys = Object.keys(this.candidateDiv.displayText);
+        let candidateTextKeys = Object.keys(this.candidateElements.displayText);
 
         for (let i = 0; i < candidateInfoKeys.length; i++) {
 
             if (candidateInfoKeys[i] == 'message') {
-                this.candidateDiv.messageContainer.style.display = 'initial';
+                this.candidateElements.messageContainer.style.display = 'initial';
                 this.inputReferences[inputReferenceKeys[i]].style.display = 'none';
                 continue;
             }
 
-            this.candidateDiv.displayText[candidateTextKeys[i]].innerHTML = this.candidateInfo[candidateInfoKeys[i]];
+            this.candidateElements.displayText[candidateTextKeys[i]].innerHTML = this.candidateInfo[candidateInfoKeys[i]];
             this.inputReferences[inputReferenceKeys[i]].style.display = 'none';
         }
 
         // remove 'save' and 'cancel' buttons and add 'edit' button
-        this.candidateDiv.saveButton.style.display = 'none';
-        this.candidateDiv.cancelButton.style.display = 'none';
-        this.candidateDiv.editButton.style.display = 'inline-block';
+        this.candidateElements.saveButton.style.display = 'none';
+        this.candidateElements.cancelButton.style.display = 'none';
+        this.candidateElements.editButton.style.display = 'inline-block';
 
         // update input field size
-        this.candidateDiv.inputDiv.style.maxHeight = this.candidateDiv.inputDiv.scrollHeight + 'px';
+        this.candidateElements.inputDiv.style.maxHeight = this.candidateElements.inputDiv.scrollHeight + 'px';
 
         // update variable to allow the user to open or close this input box
         this.supress = false;
@@ -355,12 +358,12 @@ class Candidate {
         // update the information on the info bar
         Candidate.updateInfoBar();
 
-        // update input box width
-        adjustDivs();
-
         // update input box information and submission state image
-        this.candidateDiv.divHeaderSpan.innerHTML = this.candidateDiv.divHeaderSpan.innerHTML.replaceAll('Not Submitted', (this.inputReferences.lastNameInput.value + ', ' + this.inputReferences.firstNameInput.value));
-        this.candidateDiv.submissionStateImage.setAttribute('src', 'assets/checkmark.png');
+        this.candidateElements.divHeaderSpan.innerHTML = this.candidateElements.divHeaderSpan.innerHTML.replaceAll('Not Submitted', (this.inputReferences.lastNameInput.value + ', ' + this.inputReferences.firstNameInput.value));
+        this.candidateElements.submissionStateImage.setAttribute('src', 'assets/checkmark.png');
+
+        // run submit function to format stuff
+        this.submitData();
     }
 
 
@@ -691,8 +694,6 @@ class Candidate {
                 // close div
                 if (content.style.maxHeight) {
 
-                    // hide input divs
-
                     candidateItems.candidateDiv.style.width = temp.initialWidth - 16 + 'px';
 
                     content.style.maxHeight = null;
@@ -730,6 +731,41 @@ class Candidate {
 
 
 
+    // function to adjust the size of the divs
+    adjustDivs() {
+
+        let largestDiv = 0;
+
+        for (let candidate of Candidate.candidates) {
+
+            if (candidate == this) {
+                continue;
+            }
+
+            candidate = candidate.candidateElements.candidateDiv;
+
+            console.log('offset width: ' + candidate.offsetWidth);
+
+            if (candidate.offsetWidth > largestDiv) {
+                largestDiv = candidate.offsetWidth;
+            }
+        }
+
+    for (let candidate of Candidate.candidates) {
+
+        if (candidate == this) {
+            continue;
+        }
+
+        candidate = candidate.candidateElements.candidateDiv;
+
+        candidate.style.display = 'block';
+        candidate.style.width = largestDiv - 16 + 'px';
+    }
+
+    Candidate.baseWidth = largestDiv + 'px';
+}
+
     // function to update the info bar depending on the candidates submitted
     static updateInfoBar() {
 
@@ -748,6 +784,15 @@ class Candidate {
             candidateCounter.style.display = 'block';
             endInputButton.style.display = 'none';
         }
+    }
+
+
+
+    // function to create the candidate voting page
+    loadVotingPage() {
+
+
+
     }
 }
 
@@ -771,38 +816,10 @@ function start() {
 
     for (let candidate of Candidate.candidates) {
 
-        console.log('offset width: ' + candidate.candidateDiv.candidateDiv.offsetWidth);
+        console.log('offset width: ' + candidate.candidateElements.candidateDiv.offsetWidth);
     }
 
     console.log('full width: ' + document.getElementById('input-master-div').offsetWidth);
-}
-
-
-
-// function to adjust the size of the divs
-function adjustDivs() {
-
-    let candidates = document.getElementsByClassName('candidate-div');
-
-    let largestDiv = 0;
-
-    for (let candidate of candidates) {
-
-
-        console.log('offset width: ' + candidate.offsetWidth);
-
-        if (candidate.offsetWidth > largestDiv) {
-            largestDiv = candidate.offsetWidth;
-        }
-    }
-
-    for (let candidate of candidates) {
-
-        candidate.style.display = 'block';
-        candidate.style.width = largestDiv - 16 + 'px';
-    }
-
-    Candidate.baseWidth = largestDiv + 'px';
 }
 
 
@@ -831,11 +848,13 @@ function initialAdjustDivs() {
 
     for (let candidate of Candidate.candidates) {
 
-        candidate.initialWidth = candidate.candidateDiv.inputDiv.style.width + 'px';
+        candidate.initialWidth = candidate.candidateElements.inputDiv.style.width + 'px';
 
-        candidate.candidateDiv.inputDiv.style.display = 'block';
+        candidate.candidateElements.inputDiv.style.display = 'block';
     }
 
     Candidate.baseWidth = largestDiv + 65 + 'px';
+
+    document.getElementById('input-master-div').style.width = window.innerWidth - 64 + 'px';
 }
 
