@@ -12,7 +12,7 @@
         <div id="info-bar">
             <h1 id="header">Candidate Submission</h1>
             <h1 id="candidate-counter">0/10</h1>
-            <button type="button" id="end-candidate-input" class="grow">Vote</button>
+            <button type="button" id="end-candidate-input" class="grow" onclick="Candidate.loadVotingPage();">Vote</button>
         </div>
 
         <div id="info-bar-placeholder"></div>
@@ -28,9 +28,9 @@
             message, and a link to an image. 
         -->
 
-        <div id="input-master-div">
+        <div id="input-master-div"></div>
 
-        </div>
+        <div id="voting-master-div"></div>
 
 
         <!-- only allow the user to have one info input open at a time -->

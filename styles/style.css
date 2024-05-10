@@ -1,6 +1,6 @@
 body {
     color: black;
-    background-color: white; /* remember to change color back to white! */
+    background-color: white;
     font-family: sans-serif;
     margin: 0;
     padding: 0;
@@ -19,7 +19,7 @@ body {
 }
 
 #header {
-    font-size: 5rem;
+    font-size: 4.5rem;
     margin: 0 auto;
     padding-top: 1rem;
 }
@@ -31,11 +31,13 @@ body {
 
 #end-candidate-input {
     margin: 1rem 0;
-    padding: 0 1rem;
+    padding: 0.2rem 0.7rem;
     font-size: 2.5rem;
     font-weight: bold;
-    border: none;
-    border-radius: 2rem;
+    border-radius: 1.5rem;
+    border-width: 0.55rem;
+    border-color: steelblue;
+    background-color: #e0eeff;
     cursor: pointer;
 }
 
@@ -120,7 +122,6 @@ body {
 }
 
 .paragraph-container {
-    /* white-space: normal; */
     text-overflow: ellipsis;
     max-width: 100%;
     overflow-wrap: break-word;
@@ -136,9 +137,15 @@ body {
 }
 
 .submission-button {
-    font-size: 1.5rem;
-    border-radius: 1rem;
+    color: black;
+    font-size: 1.75rem;
+    font-weight: bold;
+    border-radius: 1.1rem;
+    border-color: steelblue;
+    border-width: 0.4rem;
     cursor: pointer;
+    background-color: #e0eeff;
+    padding: 0.2rem 0.55rem;
 }
 
 .error-message {
@@ -149,6 +156,33 @@ body {
     display: none;
 }
 
+#voting-master-div {
+    display: inline-block;
+    margin: 0 auto;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+.voting-div {
+    display: flex;
+    justify-content: left;
+    max-width: 100%;
+    font-size: 2rem;
+    background-color: dodgerblue;
+    margin: 2rem auto;
+    padding: 0.5rem;
+    border-radius: 2rem;
+}
+
+.info-div {
+    max-width: 100%;
+    font-size: 1.75rem;
+    justify-content: left;
+}
+
+
+
+
 .grow { 
     cursor: pointer;
     transition: all .2s ease-in-out; 
@@ -157,8 +191,6 @@ body {
 .grow:hover { 
     transform: scale(1.1); 
 }
-
-
 
 .hidden-on-load {
     display: none;

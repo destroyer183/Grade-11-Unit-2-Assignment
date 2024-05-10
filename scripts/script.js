@@ -777,22 +777,115 @@ class Candidate {
         if (Candidate.submitted === Candidate.candidates.length) {
 
             candidateCounter.style.display = 'none';
-            endInputButton.style.display = 'block';
+            endInputButton.style.display = 'inline-block';
 
         } else {
 
-            candidateCounter.style.display = 'block';
-            endInputButton.style.display = 'none';
+            candidateCounter.style.display = 'none';
+            endInputButton.style.display = 'inline-block';
         }
     }
 
 
 
     // function to create the candidate voting page
-    loadVotingPage() {
+    static loadVotingPage() {
 
 
 
+        // load master div
+        let master = document.getElementById('voting-master-div');
+
+        // set max size
+        master.style.width = window.innerWidth - 128 + 'px';
+
+        for (let candidate of Candidate.candidates) {
+
+            let votingItems = {
+
+                votingDiv: document.createElement('div'), // div to hold all of the candidate's info
+
+                imageDiv: document.createElement('div'), // div to hold the image
+
+                candidateImage: document.createElement('img'), // image tag to display the candidate image
+
+                infoDiv: document.createElement('div'), // div to hold the candidate info
+
+                candidateName: document.createElement('p'), // paragraph to display the candidate's full name
+
+                candidateGrade: document.createElement('p'), // paragraph to display the candidate's grade
+
+                candidatePosition: document.createElement('p'), // paragraph to display the candidate's position and grade (don't load grade if position contains grade info)
+
+                candidateMessage: document.createElement('p') // paragraph to display the candidate's message
+
+            };
+
+
+    
+            // set classes for voting div
+            votingItems.votingDiv.setAttribute('class', 'voting-div');
+
+            // set classes for image div and candidate image
+            votingItems.imageDiv.setAttribute('class', 'image-div');
+            votingItems.candidateImage.setAttribute('class', 'candidate-image');
+
+            // set classes for info div and its content
+            votingItems.infoDiv.setAttribute('class', 'info-div');
+            votingItems.candidateName.setAttribute('class', 'candidate-name');
+            votingItems.candidateGrade.setAttribute('class', 'candidate-grade');
+            votingItems.candidatePosition.setAttribute('class', 'candidate-position');
+            votingItems.candidateMessage.setAttribute('class', 'candidate-message');
+
+            // set data for candidate info
+            votingItems.candidateImage.setAttribute('src', URL.createObjectURL(candidate.candidateInfo.image));
+            votingItems.candidateName.innerText = candidate.candidateInfo.lastName + ', ' + candidate.candidateInfo.firstName;
+            votingItems.candidateGrade.innerText = candidate.candidateInfo.grade;
+            votingItems.candidatePosition.innerText = candidate.candidateInfo.position;
+            votingItems.candidateMessage.innerText = candidate.candidateInfo.message;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            // add new data to candidate object
+            candidate.votingElements = votingItems;
+
+
+
+            // div format:
+            // votingItems: {
+                // votingDiv: {
+
+                    // imageDiv: {
+                        // candidateImage
+                    // }
+
+                    // infoDiv: {
+                        // candidateName
+                        // candidatePosition
+                        // candidateMessage
+                    // }
+                // }
+
+                // votingDiv: {}
+                // ...
+            // }
+        }
+
+        // load image on the far left with a fixed height
+        // load 'lastName, firstName' to the right of the image in big bold text
+        // below that, load the position and grade in normal text (don't load grade if position contains grade info)
+        // below that, load the message
     }
 }
 
@@ -855,6 +948,6 @@ function initialAdjustDivs() {
 
     Candidate.baseWidth = largestDiv + 65 + 'px';
 
-    document.getElementById('input-master-div').style.width = window.innerWidth - 64 + 'px';
+    document.getElementById('input-master-div').style.width = window.innerWidth - 128 + 'px';
 }
 
