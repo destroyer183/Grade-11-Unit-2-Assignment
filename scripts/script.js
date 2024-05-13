@@ -21,6 +21,24 @@ String.prototype.contains = function (characters) {
 
 
 
+// make new array method
+Array.prototype.contains = function (elements) {
+
+    let array = this.valueOf();
+
+    for (let element of elements) {
+
+        for (let item of elements) {
+
+            if (element == item) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 
 
 class Candidate {
@@ -208,6 +226,12 @@ class Candidate {
         let inputReferenceKeys = Object.keys(this.inputReferences);
 
         for (let i = 0; i < candidateInfoKeys.length; i++) {
+
+            if (candidateInfoKeys[i] == 'image') {
+                this.candidateInfo[candidateInfoKeys[i]] = this.inputReferences[inputReferenceKeys[i]].files[0];
+                continue;
+            }
+
             this.candidateInfo[candidateInfoKeys[i]] = this.inputReferences[inputReferenceKeys[i]].value;
         }
 
@@ -791,7 +815,10 @@ class Candidate {
     // function to create the candidate voting page
     static loadVotingPage() {
 
+        // hide submission page
+        document.getElementById('input-master-div').style.display = 'none';
 
+        // hide 'vote' button, and replace it with something that tells the user which candidate they have selected.
 
         // load master div
         let master = document.getElementById('voting-master-div');
@@ -800,6 +827,10 @@ class Candidate {
         master.style.width = window.innerWidth - 128 + 'px';
 
         for (let candidate of Candidate.candidates) {
+
+            if (!(candidate.completed)) {
+                continue;
+            }
 
             let votingItems = {
 
@@ -813,8 +844,6 @@ class Candidate {
 
                 candidateName: document.createElement('p'), // paragraph to display the candidate's full name
 
-                candidateGrade: document.createElement('p'), // paragraph to display the candidate's grade
-
                 candidatePosition: document.createElement('p'), // paragraph to display the candidate's position and grade (don't load grade if position contains grade info)
 
                 candidateMessage: document.createElement('p') // paragraph to display the candidate's message
@@ -824,7 +853,7 @@ class Candidate {
 
     
             // set classes for voting div
-            votingItems.votingDiv.setAttribute('class', 'voting-div');
+            votingItems.votingDiv.setAttribute('class', 'voting-div grow-small');
 
             // set classes for image div and candidate image
             votingItems.imageDiv.setAttribute('class', 'image-div');
@@ -832,28 +861,37 @@ class Candidate {
 
             // set classes for info div and its content
             votingItems.infoDiv.setAttribute('class', 'info-div');
-            votingItems.candidateName.setAttribute('class', 'candidate-name');
-            votingItems.candidateGrade.setAttribute('class', 'candidate-grade');
-            votingItems.candidatePosition.setAttribute('class', 'candidate-position');
-            votingItems.candidateMessage.setAttribute('class', 'candidate-message');
+            votingItems.candidateName.setAttribute('class', 'candidate-info');
+            votingItems.candidatePosition.setAttribute('class', 'candidate-info');
+            votingItems.candidateMessage.setAttribute('class', 'candidate-info');
 
             // set data for candidate info
             votingItems.candidateImage.setAttribute('src', URL.createObjectURL(candidate.candidateInfo.image));
-            votingItems.candidateName.innerText = candidate.candidateInfo.lastName + ', ' + candidate.candidateInfo.firstName;
-            votingItems.candidateGrade.innerText = candidate.candidateInfo.grade;
-            votingItems.candidatePosition.innerText = candidate.candidateInfo.position;
-            votingItems.candidateMessage.innerText = candidate.candidateInfo.message;
+            votingItems.candidateImage.setAttribute('height', '300px');
+            votingItems.candidateName.innerHTML = '<b>Full Name: </b>' + candidate.candidateInfo.lastName + ', ' + candidate.candidateInfo.firstName;
+
+
+            if (['Grade 10 Representative', 'Grade 11 Representative', 'Grade 12 Representative'].contains([candidate.candidateInfo.position])) {
+                votingItems.candidatePosition.innerHTML = '<b>Grade & Position: </b>' + candidate.candidateInfo.position;
+            } else {
+                votingItems.candidatePosition.innerHTML = '<b>Grade & Position: </b>' + candidate.candidateInfo.grade + ', ' + candidate.candidateInfo.position;
+            }
+
+            votingItems.candidateMessage.innerHTML = '<b>Message: </b>' + candidate.candidateInfo.message;
 
 
 
+            // add divs to page
+            master.appendChild(votingItems.votingDiv);
 
+            votingItems.votingDiv.appendChild(votingItems.imageDiv);
+            votingItems.votingDiv.appendChild(votingItems.infoDiv);
 
+            votingItems.imageDiv.appendChild(votingItems.candidateImage);
 
-
-
-
-
-
+            votingItems.infoDiv.appendChild(votingItems.candidateName);
+            votingItems.infoDiv.appendChild(votingItems.candidatePosition);
+            votingItems.infoDiv.appendChild(votingItems.candidateMessage);
 
 
 

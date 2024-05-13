@@ -174,10 +174,35 @@ body {
     border-radius: 2rem;
 }
 
+.voting-div:hover {
+    background-color: deepskyblue;
+}
+
+.image-div {
+    padding: 1rem 1.5rem;
+    padding-right: 3rem;
+}
+
+.candidate-image {
+    /* max-height: 300px; */
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+}
+
 .info-div {
+    /* display: flex; */
+    /* flex-direction: column; */
+    /* flex-wrap: wrap; */
+    /* justify-content: left; */
+    text-align: left;  
     max-width: 100%;
     font-size: 1.75rem;
-    justify-content: left;
+    /* font-weight: bold; */
+}
+
+.candidate-info {
+    width: 100%;
 }
 
 
@@ -190,6 +215,15 @@ body {
 
 .grow:hover { 
     transform: scale(1.1); 
+}
+
+.grow-small {
+    cursor: pointer;
+    transition: all .2s ease-in-out;
+}
+
+.grow-small:hover {
+    transform: scale(1.015);
 }
 
 .hidden-on-load {
