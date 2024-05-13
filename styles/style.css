@@ -116,6 +116,8 @@ body {
     padding: 0;
 }
 
+
+
 .input-box {
     font-size: 1.5rem;
     position: relative;
@@ -129,6 +131,38 @@ body {
     justify-content: left;
     text-align: left;
     margin: 0.5rem 0;
+}
+
+.preview-div {
+    padding: 1rem 1.5rem;
+    padding-right: 3rem;
+    background-color: cornflowerblue;
+    border-radius: 1rem;
+    width: 300px;
+    height: 300px;
+    display: none;
+    overflow: hidden;
+}
+
+.preview-div img {
+    display: block;
+    min-width: 100%;
+    min-height: 100%;
+}
+
+.preview-image {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+}
+
+.image-container:hover + .image-preview {
+    display: block;
+    position: absolute;
+    z-index: 1;
 }
 
 .button-div {
@@ -181,24 +215,31 @@ body {
 .image-div {
     padding: 1rem 1.5rem;
     padding-right: 3rem;
+    width: 300px;
+    height: 300px;
+    display: block;
+    overflow: hidden;
+}
+
+.image-div img {
+    display: block;
+    min-width: 100%;
+    min-height: 100%;
 }
 
 .candidate-image {
-    /* max-height: 300px; */
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
     -moz-border-radius: 50%;
     -webkit-border-radius: 50%;
     border-radius: 50%;
 }
 
 .info-div {
-    /* display: flex; */
-    /* flex-direction: column; */
-    /* flex-wrap: wrap; */
-    /* justify-content: left; */
     text-align: left;  
     max-width: 100%;
     font-size: 1.75rem;
-    /* font-weight: bold; */
 }
 
 .candidate-info {

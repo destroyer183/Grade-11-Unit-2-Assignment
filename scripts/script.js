@@ -448,6 +448,8 @@ class Candidate {
                 imagePrompt: document.createElement('span'),    // image input prompt
                 imageContainer: document.createElement('span'), // span to hold the image text
                 imageInputBox: document.createElement('input'), // image input box
+                imagePreviewDiv: document.createElement('div'), // div for image preview
+                imagePreview: document.createElement('img'),    // image preview 
                 'imageError': document.createElement('span'),   // span for error message
 
 
@@ -606,13 +608,18 @@ class Candidate {
             candidateItems.imagePrompt.setAttribute('class', 'input-prompt');
             candidateItems.imagePrompt.innerHTML = '<b>Image: </b>';
 
-            candidateItems.imageContainer.setAttribute('class', 'input-container');
+            candidateItems.imageContainer.setAttribute('class', 'input-container image-container');
 
             candidateItems.imageInputBox.setAttribute('class', 'input-box');
             candidateItems.imageInputBox.setAttribute('type', 'file');
             candidateItems.imageInputBox.setAttribute('name', 'imageError');
             candidateItems.imageInputBox.setAttribute('accept', 'image/*');
             candidateItems.imageInputBox.setAttribute('required', 'required');
+
+            candidateItems.imagePreviewDiv.setAttribute('class', 'preview-div');
+
+            candidateItems.imagePreview.setAttribute('class', 'preview-image');
+            candidateItems.imagePreview.setAttribute('alt', 'image preveiw');
 
             candidateItems['imageError'].setAttribute('class', 'error-message');
             candidateItems['imageError'].innerHTML = 'Please fill out this field.';
@@ -866,8 +873,10 @@ class Candidate {
             votingItems.candidateMessage.setAttribute('class', 'candidate-info');
 
             // set data for candidate info
-            votingItems.candidateImage.setAttribute('src', URL.createObjectURL(candidate.candidateInfo.image));
-            votingItems.candidateImage.setAttribute('height', '300px');
+            // URL.createObjectURL(candidate.candidateInfo.image);
+            let image = URL.createObjectURL(candidate.candidateInfo.image);
+            votingItems.candidateImage.style.backgroundImage = image;
+            votingItems.candidateImage.setAttribute('src', image);
             votingItems.candidateName.innerHTML = '<b>Full Name: </b>' + candidate.candidateInfo.lastName + ', ' + candidate.candidateInfo.firstName;
 
 
