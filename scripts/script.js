@@ -45,7 +45,8 @@ class Candidate {
 
     static candidates = [];
     static submitted = 0;
-    static baseWidth = 0;
+    static baseWidth;
+    static selectedCandidate;
 
     constructor(candidateDiv) {
 
@@ -149,6 +150,7 @@ class Candidate {
             if (input.value == '' || (input.type == 'select' && input.value == 'null')) {
 
                 this.candidateElements[input.name].innerHTML = 'Please fill out this field.';
+                this.candidateElements[input.name].style.left = input.offsetLeft + 'px';
                 this.candidateElements[input.name].style.display = 'initial';
 
                 errorFound = true;
@@ -164,6 +166,7 @@ class Candidate {
             if (this.inputReferences.firstNameInput.value != '' && this.inputReferences.firstNameInput.value.indexOf(character) != -1) {
 
                 this.candidateElements['firstNameError'].innerHTML = 'First name cannot contain special characters.';
+                this.candidateElements[input.name].style.left = input.offsetLeft + 'px';
                 this.candidateElements['firstNameError'].style.display = 'initial';
 
                 this.inputReferences.firstNameInput.value = '';
@@ -174,6 +177,7 @@ class Candidate {
             if (this.inputReferences.lastNameInput.value != '' && this.inputReferences.lastNameInput.value.indexOf(character) != -1) {
 
                 this.candidateElements['lastNameError'].innerHTML = 'Last name cannot contain special characters.';
+                this.candidateElements[input.name].style.left = input.offsetLeft + 'px';
                 this.candidateElements['lastNameError'].style.display = 'initial';
 
                 this.inputReferences.lastNameInput.value = '';
@@ -190,9 +194,11 @@ class Candidate {
         ) {
 
             this.candidateElements['gradeError'].innerHTML = 'Mismatching grade with positon input.';
+            this.candidateElements['gradeError'].style.left = input.offsetLeft + 'px';
             this.candidateElements['gradeError'].style.display = 'initial';
 
             this.candidateElements['positionError'].innerHTML = 'Mismatching grade with grade input.';
+            this.candidateElements['positionError'].style.left = input.offsetLeft + 'px';
             this.candidateElements['positionError'].style.display = 'initial';
 
             errorFound = true;
@@ -444,14 +450,15 @@ class Candidate {
                 messageInputBox: document.createElement('input'), // message input box
                 'messageError': document.createElement('span'),   // span for error message
 
-                imageDiv: document.createElement('div'),        // div to hold this input group
-                imagePrompt: document.createElement('span'),    // image input prompt
-                imageContainer: document.createElement('span'), // span to hold the image text
-                imageInputBox: document.createElement('input'), // image input box
-                imagePreviewDiv: document.createElement('div'), // div for image preview
-                imagePreview: document.createElement('img'),    // image preview 
-                'imageError': document.createElement('span'),   // span for error message
-
+                imageDiv: document.createElement('div'),              // div to hold this input group
+                imagePrompt: document.createElement('span'),          // image input prompt
+                imageContainer: document.createElement('span'),       // span to hold the image text
+                imageInputBox: document.createElement('input'),       // image input box
+                imagePreviewDiv: document.createElement('div'),       // div for image preview
+                imagePreview: document.createElement('img'),          // image preview 
+                imageSubmitPreviewDiv: document.createElement('div'), // another image prompt for the submitted data
+                imageSubmitPreview: document.createElement('img'),    // image preview
+                'imageError': document.createElement('span'),         // span for error message
 
                 buttonDiv: document.createElement('div'),       // div to hold the buttons
                 submitButton: document.createElement('button'), // submit button
@@ -496,7 +503,7 @@ class Candidate {
 
 
             // set attribute for input div
-            candidateItems.inputDiv.setAttribute('class', 'input-div');
+            candidateItems.inputDiv.setAttribute('class', 'input-div hidden-on-load');
 
             // set attribute for button div
             candidateItems.buttonDiv.setAttribute('class', 'button-div');
@@ -524,7 +531,6 @@ class Candidate {
 
             candidateItems['firstNameError'].setAttribute('class', 'error-message');
             candidateItems['firstNameError'].innerHTML = 'Please fill out this field.';
-
 
 
 
@@ -592,7 +598,7 @@ class Candidate {
             candidateItems.messagePrompt.setAttribute('class', 'input-prompt');
             candidateItems.messagePrompt.innerHTML = '<b>Message: </b>';
 
-            candidateItems.messageContainer.setAttribute('class', 'paragraph-container');
+            candidateItems.messageContainer.setAttribute('class', 'paragraph-container hidden-on-load');
 
             candidateItems.messageInputBox.setAttribute('class', 'input-box');
             candidateItems.messageInputBox.setAttribute('type', 'text');
@@ -610,16 +616,18 @@ class Candidate {
 
             candidateItems.imageContainer.setAttribute('class', 'input-container image-container');
 
-            candidateItems.imageInputBox.setAttribute('class', 'input-box');
+            candidateItems.imageInputBox.setAttribute('class', 'input-box image-input');
             candidateItems.imageInputBox.setAttribute('type', 'file');
             candidateItems.imageInputBox.setAttribute('name', 'imageError');
             candidateItems.imageInputBox.setAttribute('accept', 'image/*');
             candidateItems.imageInputBox.setAttribute('required', 'required');
 
-            candidateItems.imagePreviewDiv.setAttribute('class', 'preview-div');
-
+            candidateItems.imagePreviewDiv.setAttribute('class', 'preview-div hidden-on-load');
             candidateItems.imagePreview.setAttribute('class', 'preview-image');
             candidateItems.imagePreview.setAttribute('alt', 'image preveiw');
+
+            candidateItems.imageSubmitPreviewDiv.setAttribute('class', 'preview-div hidden-on-load');
+            candidateItems.imageSubmitPreview.setAttribute('class', 'preview-image');
 
             candidateItems['imageError'].setAttribute('class', 'error-message');
             candidateItems['imageError'].innerHTML = 'Please fill out this field.';
@@ -669,38 +677,46 @@ class Candidate {
             candidateItems.firstNameDiv.appendChild(candidateItems.firstNamePrompt);
             candidateItems.firstNamePrompt.appendChild(candidateItems.firstNameContainer);
             candidateItems.firstNameDiv.appendChild(candidateItems.firstNameInputBox);
-            candidateItems['firstNameError'].style.left = candidateItems.firstNameInputBox.offsetLeft + 'px';
             candidateItems.firstNameDiv.appendChild(candidateItems['firstNameError']);
 
             candidateItems.lastNameDiv.appendChild(candidateItems.lastNamePrompt);
             candidateItems.lastNamePrompt.appendChild(candidateItems.lastNameContainer);
             candidateItems.lastNameDiv.appendChild(candidateItems.lastNameInputBox);
-            candidateItems['lastNameError'].style.left = candidateItems.lastNameInputBox.offsetLeft + 'px';
             candidateItems.lastNameDiv.appendChild(candidateItems['lastNameError']);
 
             candidateItems.gradeDiv.appendChild(candidateItems.gradePrompt);
             candidateItems.gradePrompt.appendChild(candidateItems.gradeContainer);
             candidateItems.gradeDiv.appendChild(candidateItems.gradeInputBox);
-            candidateItems['gradeError'].style.left = candidateItems.gradeInputBox.offsetLeft + 'px';
             candidateItems.gradeDiv.appendChild(candidateItems['gradeError']);
 
             candidateItems.positionDiv.appendChild(candidateItems.positionPrompt);
             candidateItems.positionPrompt.appendChild(candidateItems.positionContainer);
             candidateItems.positionDiv.appendChild(candidateItems.positionInputBox);
-            candidateItems['positionError'].style.left = candidateItems.positionInputBox.offsetLeft + 'px';
             candidateItems.positionDiv.appendChild(candidateItems['positionError']);
 
             candidateItems.messageDiv.appendChild(candidateItems.messagePrompt);
             candidateItems.messagePrompt.appendChild(candidateItems.messageContainer);
             candidateItems.messageDiv.appendChild(candidateItems.messageInputBox);
-            candidateItems['messageError'].style.left = candidateItems.messageInputBox.offsetLeft + 'px';
             candidateItems.messageDiv.appendChild(candidateItems['messageError']);
 
             candidateItems.imageDiv.appendChild(candidateItems.imagePrompt);
-            candidateItems.imagePrompt.appendChild(candidateItems.imageContainer);
             candidateItems.imageDiv.appendChild(candidateItems.imageInputBox);
-            candidateItems['imageError'].style.left = candidateItems.imageInputBox.offsetLeft + 'px';
+            candidateItems.imageDiv.appendChild(candidateItems.imagePreviewDiv);
+            candidateItems.imagePreviewDiv.appendChild(candidateItems.imagePreview);
+            candidateItems.imageDiv.appendChild(candidateItems.imageContainer);
+            candidateItems.imageDiv.appendChild(candidateItems.imageSubmitPreviewDiv);
+            candidateItems.imageSubmitPreviewDiv.appendChild(candidateItems.imageSubmitPreview);
+
             candidateItems.imageDiv.appendChild(candidateItems['imageError']);
+            
+            candidateItems.imageInputBox.onchange = evt => {
+                const [file] = candidateItems.imageInputBox.files;
+                if (file) {
+                    candidateItems.imagePreview.src = URL.createObjectURL(file);
+                    candidateItems.imageSubmitPreview.src = URL.createObjectURL(file);
+                }
+            }
+
 
 
             candidateItems.buttonDiv.appendChild(candidateItems.submitButton);
@@ -725,6 +741,8 @@ class Candidate {
                 // close div
                 if (content.style.maxHeight) {
 
+                    temp.expanded = false;
+
                     candidateItems.candidateDiv.style.width = temp.initialWidth - 16 + 'px';
 
                     content.style.maxHeight = null;
@@ -739,6 +757,8 @@ class Candidate {
 
                 // open div
                 } else {
+                    
+                    temp.expanded = true;
 
                     temp.initialWidth = candidateItems.candidateDiv.offsetWidth;
 
@@ -769,13 +789,11 @@ class Candidate {
 
         for (let candidate of Candidate.candidates) {
 
-            if (candidate == this) {
+            if (candidate == this || candidate.expanded) {
                 continue;
             }
 
             candidate = candidate.candidateElements.candidateDiv;
-
-            console.log('offset width: ' + candidate.offsetWidth);
 
             if (candidate.offsetWidth > largestDiv) {
                 largestDiv = candidate.offsetWidth;
@@ -784,7 +802,7 @@ class Candidate {
 
     for (let candidate of Candidate.candidates) {
 
-        if (candidate == this) {
+        if (candidate == this || candidate.expanded) {
             continue;
         }
 
@@ -826,6 +844,8 @@ class Candidate {
         document.getElementById('input-master-div').style.display = 'none';
 
         // hide 'vote' button, and replace it with something that tells the user which candidate they have selected.
+        document.getElementById('end-candidate-input').style.display = 'none';
+        document.getElementById('submission-div').style.display = 'inline-block';
 
         // load master div
         let master = document.getElementById('voting-master-div');
@@ -870,7 +890,7 @@ class Candidate {
             votingItems.infoDiv.setAttribute('class', 'info-div');
             votingItems.candidateName.setAttribute('class', 'candidate-info');
             votingItems.candidatePosition.setAttribute('class', 'candidate-info');
-            votingItems.candidateMessage.setAttribute('class', 'candidate-info');
+            votingItems.candidateMessage.setAttribute('class', 'candidate-info message-container');
 
             // set data for candidate info
             // URL.createObjectURL(candidate.candidateInfo.image);
@@ -880,10 +900,10 @@ class Candidate {
             votingItems.candidateName.innerHTML = '<b>Full Name: </b>' + candidate.candidateInfo.lastName + ', ' + candidate.candidateInfo.firstName;
 
 
-            if (['Grade 10 Representative', 'Grade 11 Representative', 'Grade 12 Representative'].contains([candidate.candidateInfo.position])) {
+            if (['Grade 10 Representative', 'Grade 11 Representative', 'Grade 12 Representative'].indexOf(candidate.candidateInfo.position) != -1) {
                 votingItems.candidatePosition.innerHTML = '<b>Grade & Position: </b>' + candidate.candidateInfo.position;
             } else {
-                votingItems.candidatePosition.innerHTML = '<b>Grade & Position: </b>' + candidate.candidateInfo.grade + ', ' + candidate.candidateInfo.position;
+                votingItems.candidatePosition.innerHTML = '<b>Grade & Position: </b> Grade ' + candidate.candidateInfo.grade + ', ' + candidate.candidateInfo.position;
             }
 
             votingItems.candidateMessage.innerHTML = '<b>Message: </b>' + candidate.candidateInfo.message;
@@ -907,6 +927,19 @@ class Candidate {
             // add new data to candidate object
             candidate.votingElements = votingItems;
 
+
+
+            votingItems.votingDiv.addEventListener('click', function() {
+
+                for (let option of Candidate.candidates) {
+                    option.votingElements.votingDiv.setAttribute('id', '');
+                }
+
+                candidate.votingElements.votingDiv.setAttribute('id', 'grow-enlarge');
+
+                Candidate.selectedCandidate = candidate;
+
+            });
 
 
             // div format:
@@ -950,16 +983,11 @@ function start() {
     // adjust the div size to make them all the same width
     initialAdjustDivs();
 
-    // adjust placeholder div size
-    let infoBarHeight = document.getElementById('info-bar').offsetHeight;
-    document.getElementById('info-bar-placeholder').style.height = infoBarHeight + 'px';
+    // adjust header div size
+    let infoBar = document.getElementById('info-bar');
+    document.getElementById('info-bar-placeholder').style.height = infoBar.offsetHeight + 'px';
 
-    for (let candidate of Candidate.candidates) {
-
-        console.log('offset width: ' + candidate.candidateElements.candidateDiv.offsetWidth);
-    }
-
-    console.log('full width: ' + document.getElementById('input-master-div').offsetWidth);
+    infoBar.style.height = infoBar.offsetHeight + 'px';
 }
 
 
@@ -972,8 +1000,6 @@ function initialAdjustDivs() {
     let largestDiv = 0;
 
     for (let candidate of candidates) {
-
-        console.log('offset width: ' + candidate.offsetWidth);
 
         if (candidate.offsetWidth > largestDiv) {
             largestDiv = candidate.offsetWidth;

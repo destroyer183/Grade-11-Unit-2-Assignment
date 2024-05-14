@@ -24,12 +24,12 @@ body {
     padding-top: 1rem;
 }
 
-#candidate-counter {
+.header-subtext {
     font-size: 2.5rem;
     margin: 1rem 0;
 }
 
-#end-candidate-input {
+.header-button {
     margin: 1rem 0;
     padding: 0.2rem 0.7rem;
     font-size: 2.5rem;
@@ -90,7 +90,6 @@ body {
 
 .input-div {
     max-width: 100%;
-    display: none;
     font-size: 1.75rem;
     overflow: hidden;
     justify-content: left;
@@ -114,9 +113,8 @@ body {
 
 .input-container {
     padding: 0;
+    text-wrap: nowrap;
 }
-
-
 
 .input-box {
     font-size: 1.5rem;
@@ -127,20 +125,17 @@ body {
     text-overflow: ellipsis;
     max-width: 100%;
     overflow-wrap: break-word;
-    display: none;
     justify-content: left;
     text-align: left;
     margin: 0.5rem 0;
 }
 
 .preview-div {
-    padding: 1rem 1.5rem;
-    padding-right: 3rem;
+    padding: 1rem;
     background-color: cornflowerblue;
     border-radius: 1rem;
-    width: 300px;
-    height: 300px;
-    display: none;
+    width: 200px;
+    height: 200px;
     overflow: hidden;
 }
 
@@ -151,18 +146,28 @@ body {
 }
 
 .preview-image {
-    width: 300px;
-    height: 300px;
+    width: 200px;
+    height: 200px;
     object-fit: cover;
     -moz-border-radius: 50%;
     -webkit-border-radius: 50%;
     border-radius: 50%;
 }
 
-.image-container:hover + .image-preview {
+.image-input:hover + .preview-div {
     display: block;
     position: absolute;
     z-index: 1;
+    top: -250px;
+    left: 7.5rem;
+}
+
+.image-container:hover + .preview-div {
+    display: block;
+    position: absolute;
+    z-index: 1;
+    top: -250px;
+    left: 7.5rem;
 }
 
 .button-div {
@@ -186,6 +191,7 @@ body {
     color: red;
     font-size: 0.8rem;
     position: absolute;
+
     top: -1rem;
     display: none;
 }
@@ -246,6 +252,14 @@ body {
     width: 100%;
 }
 
+.message-container {
+    text-overflow: ellipsis;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    justify-content: left;
+    text-align: left;
+    margin: 0.5rem 0;
+}
 
 
 
@@ -261,6 +275,10 @@ body {
 .grow-small {
     cursor: pointer;
     transition: all .2s ease-in-out;
+}
+
+#grow-enlarge {
+    transform: scale(1.015);
 }
 
 .grow-small:hover {
