@@ -21,26 +21,6 @@ String.prototype.contains = function (characters) {
 
 
 
-// make new array method
-Array.prototype.contains = function (elements) {
-
-    let array = this.valueOf();
-
-    for (let element of elements) {
-
-        for (let item of elements) {
-
-            if (element == item) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-
-
 class Candidate {
 
     static candidates = [];
@@ -48,13 +28,13 @@ class Candidate {
     static baseWidth;
     static selectedCandidate;
 
-    constructor(candidateDiv) {
+    constructor(candidateElements) {
 
         this.completed = false;
 
         this.supress = false;
 
-        this.candidateElements = candidateDiv;
+        this.candidateElements = candidateElements;
 
         this.candidateInfo = {
             firstName: '',
@@ -67,12 +47,12 @@ class Candidate {
 
         // this will be a dictionary of all of the html inputs that coorespond to each type of candidate data
         this.inputReferences = {
-            firstNameInput: candidateDiv.firstNameInputBox, 
-            lastNameInput:  candidateDiv.lastNameInputBox, 
-            gradeInput:     candidateDiv.gradeInputBox, 
-            positionInput:  candidateDiv.positionInputBox,
-            messageInput:   candidateDiv.messageInputBox,
-            imageInput:     candidateDiv.imageInputBox
+            firstNameInput: candidateElements.firstNameInputBox, 
+            lastNameInput:  candidateElements.lastNameInputBox, 
+            gradeInput:     candidateElements.gradeInputBox, 
+            positionInput:  candidateElements.positionInputBox,
+            messageInput:   candidateElements.messageInputBox,
+            imageInput:     candidateElements.imageInputBox
         };
 
         // add candidate to class candidate array
@@ -220,7 +200,6 @@ class Candidate {
 
         // update input box information and submission state image
         this.candidateElements.divHeaderSpan.innerHTML = this.candidateElements.divHeaderSpan.innerHTML.replaceAll('Not Submitted', (this.inputReferences.lastNameInput.value + ', ' + this.inputReferences.firstNameInput.value));
-
         this.candidateElements.submissionStateImage.setAttribute('src', 'assets/checkmark.png');
         
         // change buttons that are visible
@@ -247,7 +226,7 @@ class Candidate {
         for (let i = 0; i < candidateInfoKeys.length; i++) {
 
             if (candidateInfoKeys[i] == 'message') {
-                this.candidateElements.messageContainer.style.display = 'flex';
+                this.candidateElements.messageContainer.style.display = 'block';
                 continue;
             }
 
@@ -259,6 +238,9 @@ class Candidate {
 
             this.inputReferences[key].style.display = 'none';
         }
+
+        // set full name attribute
+        this.candidateInfo.fullName = this.candidateInfo.lastName + ', ' + this.candidateInfo.firstName;
 
         // update variable so that the candidate is considered completed
         this.completed = true;
@@ -624,7 +606,7 @@ class Candidate {
 
             candidateItems.imagePreviewDiv.setAttribute('class', 'preview-div hidden-on-load');
             candidateItems.imagePreview.setAttribute('class', 'preview-image');
-            candidateItems.imagePreview.setAttribute('alt', 'image preveiw');
+            candidateItems.imagePreview.setAttribute('alt', 'Image Preveiw');
 
             candidateItems.imageSubmitPreviewDiv.setAttribute('class', 'preview-div hidden-on-load');
             candidateItems.imageSubmitPreview.setAttribute('class', 'preview-image');
@@ -717,8 +699,6 @@ class Candidate {
                 }
             }
 
-
-
             candidateItems.buttonDiv.appendChild(candidateItems.submitButton);
             candidateItems.buttonDiv.appendChild(candidateItems.editButton);
             candidateItems.buttonDiv.appendChild(candidateItems.saveButton);
@@ -729,54 +709,57 @@ class Candidate {
             // make the class object
             let temp = new Candidate(candidateItems);
 
-
-
             // give div collapsible functionalities
-            candidateItems.headerDiv.addEventListener('click', function() {
+            candidateItems.headerDiv.addEventListener('click', function() {temp.animateDiv();});
+        }
+    }
 
-                if (temp.supress) {return;}
 
-                let content = candidateItems.inputDiv;
 
-                // close div
-                if (content.style.maxHeight) {
+    // function to give the div collapsible functionalities
+    animateDiv() {
 
-                    temp.expanded = false;
+        if (this.supress) {return;}
 
-                    candidateItems.candidateDiv.style.width = temp.initialWidth - 16 + 'px';
+        let content = this.candidateElements;
 
-                    content.style.maxHeight = null;
+        // close div
+        if (content.inputDiv.style.maxHeight) {
 
-                    candidateItems.ddArrow.setAttribute('src', 'assets/ddarrow closed.png');
+            this.expanded = false;
 
-                    // disable inputs
-                    for (let input of Object.values(temp.inputReferences)) {
+            content.candidateDiv.style.width = this.initialWidth - 16 + 'px';
 
-                        input.disabled = true;
-                    }
+            content.inputDiv.style.maxHeight = null;
 
-                // open div
-                } else {
-                    
-                    temp.expanded = true;
+            content.ddArrow.setAttribute('src', 'assets/ddarrow closed.png');
 
-                    temp.initialWidth = candidateItems.candidateDiv.offsetWidth;
+            // disable inputs
+            for (let input of Object.values(this.inputReferences)) {
 
-                    content.style.maxHeight = content.scrollHeight + 'px';
+                input.disabled = true;
+            }
 
-                    candidateItems.candidateDiv.style.width = content.scrollWidth + 'px';
+        // open div
+        } else {
+            
+            this.expanded = true;
 
-                    candidateItems.ddArrow.setAttribute('src', 'assets/ddarrow open.png');
+            this.initialWidth = content.candidateDiv.offsetWidth;
 
-                    // enable inputs
-                    let inputs = Object.values(temp.inputReferences);
+            content.inputDiv.style.maxHeight = content.inputDiv.scrollHeight + 'px';
 
-                    for (let input of inputs) {
+            content.candidateDiv.style.width = content.inputDiv.scrollWidth + 'px';
 
-                        input.disabled = false;
-                    }
-                }
-            });
+            content.ddArrow.setAttribute('src', 'assets/ddarrow open.png');
+
+            // enable inputs
+            let inputs = Object.values(this.inputReferences);
+
+            for (let input of inputs) {
+
+                input.disabled = false;
+            }
         }
     }
 
@@ -821,6 +804,10 @@ class Candidate {
         let candidateCounter = document.getElementById('candidate-counter');
         let endInputButton = document.getElementById('end-candidate-input');
 
+        // adjust header div size
+        let infoBar = document.getElementById('info-bar');
+        document.getElementById('info-bar-placeholder').style.height = infoBar.offsetHeight + 'px';
+
         candidateCounter.innerText = Candidate.submitted + '/' + Candidate.candidates.length;
 
         if (Candidate.submitted === Candidate.candidates.length) {
@@ -846,6 +833,10 @@ class Candidate {
         // hide 'vote' button, and replace it with something that tells the user which candidate they have selected.
         document.getElementById('end-candidate-input').style.display = 'none';
         document.getElementById('submission-div').style.display = 'inline-block';
+
+        // adjust header div size
+        let infoBar = document.getElementById('info-bar');
+        document.getElementById('info-bar-placeholder').style.height = infoBar.offsetHeight + 'px';
 
         // load master div
         let master = document.getElementById('voting-master-div');
@@ -897,7 +888,7 @@ class Candidate {
             let image = URL.createObjectURL(candidate.candidateInfo.image);
             votingItems.candidateImage.style.backgroundImage = image;
             votingItems.candidateImage.setAttribute('src', image);
-            votingItems.candidateName.innerHTML = '<b>Full Name: </b>' + candidate.candidateInfo.lastName + ', ' + candidate.candidateInfo.firstName;
+            votingItems.candidateName.innerHTML = '<b>Full Name: </b>' + candidate.candidateInfo.fullName;
 
 
             if (['Grade 10 Representative', 'Grade 11 Representative', 'Grade 12 Representative'].indexOf(candidate.candidateInfo.position) != -1) {
@@ -929,43 +920,104 @@ class Candidate {
 
 
 
-            votingItems.votingDiv.addEventListener('click', function() {
-
-                for (let option of Candidate.candidates) {
-                    option.votingElements.votingDiv.setAttribute('id', '');
-                }
-
-                candidate.votingElements.votingDiv.setAttribute('id', 'grow-enlarge');
-
-                Candidate.selectedCandidate = candidate;
-
-            });
+            votingItems.votingDiv.addEventListener('click', function() {candidate.selectCandidate();});
+        }
+    }
 
 
-            // div format:
-            // votingItems: {
-                // votingDiv: {
 
-                    // imageDiv: {
-                        // candidateImage
-                    // }
+    selectCandidate() {
 
-                    // infoDiv: {
-                        // candidateName
-                        // candidatePosition
-                        // candidateMessage
-                    // }
-                // }
+        if (this.supress) {return;}
 
-                // votingDiv: {}
-                // ...
-            // }
+        for (let option of Candidate.candidates) {
+            try {
+                option.votingElements.votingDiv.id = '';
+            } catch {}
         }
 
-        // load image on the far left with a fixed height
-        // load 'lastName, firstName' to the right of the image in big bold text
-        // below that, load the position and grade in normal text (don't load grade if position contains grade info)
-        // below that, load the message
+        if (this === Candidate.selectedCandidate) {
+            Candidate.selectedCandidate = null;
+            this.votingElements.votingDiv.id = '';
+
+        } else {
+            this.votingElements.votingDiv.id = 'grow-enlarge';
+            Candidate.selectedCandidate = this;
+        }
+
+        Candidate.updateSelectedCandidate();
+
+        // branchlessly update selected candidate instead of using if/else because why not
+        // candidate.votingElements.votingDiv.id = 'grow-enlarge'.repeat(+(candidate === Candidate.selectedCandidate)) + '';
+        // Candidate.selectedCandidate = candidate * (candidate != Candidate.selectedCandidate) + null * (candidate === Candidate.selectedCandidate);
+
+    }
+
+
+
+    // update the display for the selected candidate
+    static updateSelectedCandidate() {
+
+        if (Candidate.selectedCandidate) {
+            document.getElementById('candidate-choice-display').innerText = 'Candidate: ' + Candidate.selectedCandidate.candidateInfo.fullName;
+            document.getElementById('submit-candidate').style.display = 'inline-block';
+
+        } else {
+            document.getElementById('candidate-choice-display').innerText = 'Candidate: Not Selected';
+            document.getElementById('submit-candidate').style.display = 'none';
+        }
+
+        // adjust header div size
+        let infoBar = document.getElementById('info-bar');
+        document.getElementById('info-bar-placeholder').style.height = infoBar.offsetHeight + 'px';
+    }
+
+
+
+    static submitVote() {
+
+        let userChoice = Candidate.selectedCandidate;
+
+        // hide other candidates
+        for (let candidate of Candidate.candidates) {
+
+            if (candidate != userChoice) {
+                try {
+                    candidate.votingElements.votingDiv.style.display = 'none';
+                } catch {}
+            }
+        }
+
+        // remove emphasis and event listener on selected candidate
+        userChoice.votingElements.votingDiv.id = '';
+        userChoice.supress = true;
+
+        // update candidate size
+        let newWidth = userChoice.votingElements.imageDiv.offsetWidth + userChoice.votingElements.infoDiv.offsetWidth + 64;
+        if (newWidth < userChoice.votingElements.votingDiv.offsetWidth) {
+            userChoice.votingElements.votingDiv.style.width = newWidth + 'px';
+        }
+
+        // change css properties
+        userChoice.votingElements.votingDiv.style.cursor = 'initial';
+        userChoice.votingElements.votingDiv.setAttribute('class', (userChoice.votingElements.votingDiv.getAttribute('class').replaceAll('grow', '')));
+
+        // hide unnecessary text in header
+        document.getElementById('submission-div').style.display = 'none'
+
+        // display text to add more info
+        document.getElementById('voting-result').style.display = 'inline-block';
+
+
+
+        // add closing sentence
+        let closingSentence = document.createElement('p');
+        closingSentence.setAttribute('id', 'closing-sentence');
+        closingSentence.innerText = 'Thank you for your submission.\nYou may now close this page.';
+
+        document.getElementById('voting-master-div').appendChild(closingSentence);
+
+
     }
 }
 
@@ -987,7 +1039,7 @@ function start() {
     let infoBar = document.getElementById('info-bar');
     document.getElementById('info-bar-placeholder').style.height = infoBar.offsetHeight + 'px';
 
-    infoBar.style.height = infoBar.offsetHeight + 'px';
+    // infoBar.style.height = infoBar.offsetHeight + 'px';
 }
 
 
@@ -1012,15 +1064,20 @@ function initialAdjustDivs() {
         candidate.style.width = largestDiv + 65 + 'px';
     }
 
+    document.getElementById('input-master-div').style.width = window.innerWidth - 128 + 'px';
+
     for (let candidate of Candidate.candidates) {
 
         candidate.initialWidth = candidate.candidateElements.inputDiv.style.width + 'px';
 
         candidate.candidateElements.inputDiv.style.display = 'block';
+
+        candidate.candidateElements.messageContainer.style.maxWidth = document.getElementById('input-master-div').offsetWidth;
     }
 
     Candidate.baseWidth = largestDiv + 65 + 'px';
 
-    document.getElementById('input-master-div').style.width = window.innerWidth - 128 + 'px';
+
+
 }
 
