@@ -27,6 +27,7 @@ class Candidate {
     static submitted = 0;
     static baseWidth;
     static selectedCandidate;
+    static initialMinWidth;
 
     constructor(candidateElements) {
 
@@ -790,6 +791,10 @@ class Candidate {
             }
         }
 
+        if (largestDiv - 16 < Candidate.initialMinWidth) {
+            return;
+        }
+
         for (let candidate of Candidate.candidates) {
 
             if (candidate == this || candidate.expanded) {
@@ -803,7 +808,7 @@ class Candidate {
         }
 
         Candidate.baseWidth = largestDiv + 'px';
-}
+    }
 
     // function to update the info bar depending on the candidates submitted
     static updateInfoBar() {
@@ -1069,6 +1074,9 @@ function initialAdjustDivs() {
 
         candidate.style.display = 'block';
         candidate.style.width = largestDiv + 65 + 'px';
+        candidate.style.minWidth = largestDiv + 65 + 'px';
+
+        Candidate.initialMinWidth = largestDiv + 65;
     }
 
     document.getElementById('input-master-div').style.width = window.innerWidth - 128 + 'px';
@@ -1083,8 +1091,4 @@ function initialAdjustDivs() {
     }
 
     Candidate.baseWidth = largestDiv + 65 + 'px';
-
-
-
 }
-
