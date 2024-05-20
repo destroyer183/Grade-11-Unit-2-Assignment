@@ -253,8 +253,8 @@ class Candidate {
         this.adjustDivs();
 
         // update input field size
-        this.candidateElements.inputDiv.style.width = this.candidateElements.inputDiv.scrollWidth + 'px';
-        this.candidateElements.candidateDiv.style.width = this.candidateElements.inputDiv.scrollWidth + 'px';
+        this.candidateElements.inputDiv.style.maxWidth = this.candidateElements.inputDiv.scrollWidth + 'px';
+        // this.candidateElements.candidateDiv.style.maxWidth = this.candidateElements.candidateDiv.scrollWidth + 'px';
         this.candidateElements.inputDiv.style.maxHeight = this.candidateElements.inputDiv.scrollHeight + 'px';
 
         return false;
@@ -279,8 +279,11 @@ class Candidate {
                 this.candidateElements.messageContainer.style.display = 'none';
                 continue;
             }
-
-            this.candidateElements.displayText[candidateTextKeys[i]].innerHTML = '';
+            try {
+                this.candidateElements.displayText[candidateTextKeys[i]].innerHTML = '';
+            } catch {
+                this.candidateElements.displayText[candidateTextKeys[i]].innerText = '';
+            }
         }
 
         // put input boxes back on screen
@@ -306,7 +309,7 @@ class Candidate {
 
         // update input field size
         this.candidateElements.inputDiv.style.maxHeight = this.candidateElements.inputDiv.scrollHeight + 'px';
-        this.candidateElements.candidateDiv.style.width = this.initialWidth - 16 + 'px';
+        this.candidateElements.candidateDiv.style.maxWidth = this.initialWidth - 16 + 'px';
         
         // remove 'edit' button and display 'save' and 'cancel' buttons
         this.candidateElements.editButton.style.display = 'none';
@@ -749,7 +752,11 @@ class Candidate {
 
             content.inputDiv.style.maxHeight = content.inputDiv.scrollHeight + 'px';
 
-            content.candidateDiv.style.width = content.inputDiv.scrollWidth + 'px';
+            // content.candidateDiv.style.maxWidth = content.inputDiv.scrollWidth + 'px';
+            // content.candidateDiv.style.maxWidth = document.getElementById('input-master-div').clientWidth;
+            content.candidateDiv.style.maxWidth = '100%'
+
+            content.candidateDiv.style.width = null;
 
             content.ddArrow.setAttribute('src', 'assets/ddarrow open.png');
 
@@ -783,19 +790,19 @@ class Candidate {
             }
         }
 
-    for (let candidate of Candidate.candidates) {
+        for (let candidate of Candidate.candidates) {
 
-        if (candidate == this || candidate.expanded) {
-            continue;
+            if (candidate == this || candidate.expanded) {
+                continue;
+            }
+
+            candidate = candidate.candidateElements.candidateDiv;
+
+            candidate.style.display = 'block';
+            candidate.style.width = largestDiv - 16 + 'px';
         }
 
-        candidate = candidate.candidateElements.candidateDiv;
-
-        candidate.style.display = 'block';
-        candidate.style.width = largestDiv - 16 + 'px';
-    }
-
-    Candidate.baseWidth = largestDiv + 'px';
+        Candidate.baseWidth = largestDiv + 'px';
 }
 
     // function to update the info bar depending on the candidates submitted
@@ -1068,11 +1075,11 @@ function initialAdjustDivs() {
 
     for (let candidate of Candidate.candidates) {
 
-        candidate.initialWidth = candidate.candidateElements.inputDiv.style.width + 'px';
+        candidate.initialWidth = candidate.candidateElements.inputDiv.style.maxWidth + 'px';
 
         candidate.candidateElements.inputDiv.style.display = 'block';
 
-        candidate.candidateElements.messageContainer.style.maxWidth = document.getElementById('input-master-div').offsetWidth;
+        candidate.candidateElements.messageContainer.style.maxWidth = document.getElementById('input-master-div').clientWidth;
     }
 
     Candidate.baseWidth = largestDiv + 65 + 'px';
