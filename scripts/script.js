@@ -230,7 +230,7 @@ class Candidate {
     // this will be the function that is called when the user submits data
     submitData() {
 
-        // since the error message function will return true if an error is found, this exits the function if an error is found
+        // since the error message function will return true if an error is found, this exits the function and returns true if an error is found
         if (this.putErrorMessage()) {return true;}
 
         // reformat the inputted data
@@ -256,22 +256,32 @@ class Candidate {
 
                 // add the image data to the candidate data in a special way 
                 this.candidateInfo[candidateInfoKeys[i]] = this.inputReferences[inputReferenceKeys[i]].files[0];
+
+                // skip the rest of the loop
                 continue;
             }
 
+            // add input box data to candidate info dictionary
             this.candidateInfo[candidateInfoKeys[i]] = this.inputReferences[inputReferenceKeys[i]].value;
         }
 
-        // update info display
+        // create variable for the dictionary keys of the candidate data display text elements
         let candidateTextKeys = Object.keys(this.candidateElements.displayText);
 
+        // loop through the dictionaries for the candidate info, the input references, and the display text references as if they were arrays, and do it by index to access them in parallel
         for (let i = 0; i < inputReferenceKeys.length; i++) {
 
+            // separately check if the current dictionary element is the message element
             if (candidateInfoKeys[i] == 'message') {
+
+                // display the element
                 this.candidateElements.messageContainer.style.display = 'block';
+                
+                // skip the rest of the loop
                 continue;
             }
 
+            // add candidate info data to the display text element
             this.candidateElements.displayText[candidateTextKeys[i]].innerHTML += this.candidateInfo[candidateInfoKeys[i]];
         }
 
@@ -281,7 +291,7 @@ class Candidate {
             this.inputReferences[key].style.display = 'none';
         }
 
-        // set full name attribute
+        // set full name attribute for the candidate
         this.candidateInfo.fullName = this.candidateInfo.lastName + ', ' + this.candidateInfo.firstName;
 
         // update variable so that the candidate is considered completed
@@ -297,6 +307,7 @@ class Candidate {
         this.candidateElements.inputDiv.style.maxWidth = this.candidateElements.inputDiv.scrollWidth + 'px';
         this.candidateElements.inputDiv.style.maxHeight = this.candidateElements.inputDiv.scrollHeight + 'px';
 
+        // return false if the function finishes without any errors, this specifically returns false, as it is used as both a check, and used to format data in the 'saveData()' function
         return false;
     }
 
@@ -695,7 +706,7 @@ class Candidate {
             candidateItems.inputDiv.appendChild(candidateItems.positionDiv);
             candidateItems.inputDiv.appendChild(candidateItems.messageDiv);
             candidateItems.inputDiv.appendChild(candidateItems.imageDiv);
-            candidateItems.inputDiv.appendChild(candidateItems.buttonDiv);
+            candidateItems.candidateDiv.appendChild(candidateItems.buttonDiv);
 
             candidateItems.firstNameDiv.appendChild(candidateItems.firstNamePrompt);
             candidateItems.firstNamePrompt.appendChild(candidateItems.firstNameContainer);
@@ -772,6 +783,8 @@ class Candidate {
             content.candidateDiv.style.width = this.initialWidth - 16 + 'px';
 
             content.inputDiv.style.maxHeight = null;
+            content.buttonDiv.style.maxHeight = null;
+            content.buttonDiv.style.display = 'block'
 
             content.ddArrow.setAttribute('src', 'assets/ddarrow closed.png');
 
@@ -789,9 +802,9 @@ class Candidate {
             this.initialWidth = content.candidateDiv.offsetWidth;
 
             content.inputDiv.style.maxHeight = content.inputDiv.scrollHeight + 'px';
+            content.buttonDiv.style.maxHeight = content.buttonDiv.scrollHeight + 'px';
+            content.buttonDiv.style.display = 'inline-block';
 
-            // content.candidateDiv.style.maxWidth = content.inputDiv.scrollWidth + 'px';
-            // content.candidateDiv.style.maxWidth = document.getElementById('input-master-div').clientWidth;
             content.candidateDiv.style.maxWidth = '100%'
 
             content.candidateDiv.style.width = null;
@@ -1123,6 +1136,7 @@ function initialAdjustDivs() {
         candidate.initialWidth = candidate.candidateElements.inputDiv.style.maxWidth + 'px';
 
         candidate.candidateElements.inputDiv.style.display = 'block';
+        candidate.candidateElements.buttonDiv.style.display = 'block';
 
         candidate.candidateElements.messageContainer.style.maxWidth = document.getElementById('input-master-div').clientWidth;
     }

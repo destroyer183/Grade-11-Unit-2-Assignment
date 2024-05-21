@@ -192,8 +192,11 @@ body {
 }
 
 .button-div {
-    display: inline-block;
-    margin-bottom: 1rem;
+    overflow: hidden;
+    /* display: inline-block; */
+    max-height: 0;
+    /* margin-bottom: 1rem; */
+    transition: max-height 0.2s ease-out;
 }
 
 .submission-button {
