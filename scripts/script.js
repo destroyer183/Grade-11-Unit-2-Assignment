@@ -4,39 +4,46 @@
 // make new string method
 String.prototype.contains = function (characters) {
 
+    // get value of string object
     let str = this.valueOf();
 
+    // loop over every character that needs to be checked for 
     for (let character of characters) {
 
-        for (let element of str) {
+        // check if the string contains the current character
+        if (str.indexOf(character) != -1) {
 
-            if (element == character) {
-                return true;
-            }
+            // return true if the character contains the current character
+            return true;
         }
     }
 
+    // return false if the string doesn't contain one of the characters
     return false;
 }
 
 
 
+// create class for candidates
 class Candidate {
 
-    static candidates = [];
-    static submitted = 0;
-    static baseWidth;
-    static selectedCandidate;
-    static initialMinWidth;
+    // create class variables
+    static candidates = []; // create array to store each candidate object
+    static submitted = 0; // create counter to keep track of the amount of submitted candidates
+    static baseWidth; // create variable to store the initial width of the candidate submission divs
+    static selectedCandidate; // create variable to store the current selected candidate in the voting menu
+    static initialMinWidth; // create variable to store the initial minimum width of the candidate submission divs
 
+    // create class constructor that takes in a dictionary of every html element for each candidate div
     constructor(candidateElements) {
 
-        this.completed = false;
-
+        // create class attribute to keep track of whether or not the drop-down animation should be supressed
         this.supress = false;
 
+        // create class attribute to store the html elements
         this.candidateElements = candidateElements;
 
+        // create class attribute to hold placeholders for the submitted values of the candidate's data in a dictionary
         this.candidateInfo = {
             firstName: '',
             lastName:  '',
@@ -46,7 +53,7 @@ class Candidate {
             image:     ''
         };
 
-        // this will be a dictionary of all of the html inputs that coorespond to each type of candidate data
+        // create class attribute to store references to each input box for the candidate's data 
         this.inputReferences = {
             firstNameInput: candidateElements.firstNameInputBox, 
             lastNameInput:  candidateElements.lastNameInputBox, 
@@ -65,57 +72,74 @@ class Candidate {
     // this will be the function that will verify and adjust the inputted data
     verifyData() {
 
-        console.log('Data is being verified and re-formatted.');
-
-        // remove whitespace in first & last name input fields
+        // remove whitespace in first & last name input boxes
         this.inputReferences.firstNameInput.value = this.inputReferences.firstNameInput.value.trim();
         this.inputReferences.lastNameInput.value = this.inputReferences.lastNameInput.value.trim();
 
-        // uppercase the first letter and lowercase the rest of each input
+        // uppercase the first letter and lowercase the rest of each input in the first & last name input boxes
         this.inputReferences.firstNameInput.value = this.inputReferences.firstNameInput.value.substring(0, 1).toUpperCase() + this.inputReferences.firstNameInput.value.substring(1, this.inputReferences.firstNameInput.value.length).toLowerCase();
         this.inputReferences.lastNameInput.value = this.inputReferences.lastNameInput.value.substring(0, 1).toUpperCase() + this.inputReferences.lastNameInput.value.substring(1, this.inputReferences.lastNameInput.value.length).toLowerCase();
 
-        let sentenceTerminators = '!.?';
+        // create variables necessary for verifying the format of the data
+        let sentenceTerminators = '!.?'; // variable for the punctuation that end a sentence
+        let newSentence = ''; // variable to store the re-formatted sentence
+        let previousIsTerminator = false; // variable to keep track of whether or not the last character was a sentence terminator
 
-        let newSentence = '';
-
-        let previousIsTerminator = false;
-
-        // do stuff here to reformat the inputted sentence
+        // loop over every character in the inputted message
         for (let character of this.inputReferences.messageInput.value.trim()) {
 
+            // check if the previous character was a sentence terminator, and if the current character is not a sentence terminator
             if (previousIsTerminator && !character.contains(sentenceTerminators)) {
+
+                // check if the character is a new line or a space
                 if (character === ' ' || character === '\n') {
+
+                    // skip the rest of the loop
                     continue;
 
+                // run if the current character is not a space or a new line
                 } else {
+
+                    // add a new line character to the re-formatted sentence, then uppercase and add the current character to the re-formatted sentence
                     newSentence += '\n' + character.toUpperCase();
-                    previousIsTerminator = false;
+                    previousIsTerminator = false; // change variable to show that the previous character was not a sentence terminator
                 }
             
+            // check if the previous character was a sentence terminator, and if the current character is a sentence terminator
             } else if (previousIsTerminator && character.contains(sentenceTerminators)) {
+
+                // add the current character to the re-formatted sentence
                 newSentence += character;
 
+            // check if the current character is a sentence terminator
             } else if (character.contains(sentenceTerminators)) {
-                previousIsTerminator = true;
-                newSentence += character;
 
+                previousIsTerminator = true; // update variable to show that the previous character is a sentence terminator
+                newSentence += character; // add current character to the re-formatted sentence
+
+            // run if nothing else triggers
             } else {
+
+                // add current character to re-formatted sentence
                 newSentence += character;
             }
         }
 
-        // make sure there is a sentence terminator at the end
+        // check if there is a sentence terminator at the end of the message, and add a period if there is no sentence terminator
         if (!(newSentence.substring(newSentence.length - 1, newSentence.length).contains(sentenceTerminators))) {
             newSentence += '.';
         }
 
 
 
+        // uppercase the first letter of the re-formatted message
         let fullSentence = newSentence.substring(0, 1).toUpperCase() + newSentence.substring(1, newSentence.length);
+
+        // update the content of the message input box
         this.candidateElements.messageContainer.innerText = fullSentence;
+
+        // store the full sentence in the class attribute for the current candidate
         this.inputReferences.messageInput.value = fullSentence;
-        return;
     }
 
 
@@ -123,48 +147,59 @@ class Candidate {
     // this function will check for any errors in the inputted data and display error text accordingly
     putErrorMessage() {
 
+        // create variable to keep track of whether or not an error was found
         let errorFound = false;
 
-        // check to make sure all fields are inputted
+        // loop over the html element of every input field
         for (let input of Object.values(this.inputReferences)) {
 
+            // check if the input value is empty or equal to the initial value given when the page loads
             if (input.value == '' || (input.type == 'select' && input.value == 'null')) {
 
-                this.candidateElements[input.name].innerHTML = 'Please fill out this field.';
-                this.candidateElements[input.name].style.left = input.offsetLeft + 'px';
-                this.candidateElements[input.name].style.display = 'initial';
+                // configure and display error message
+                this.candidateElements[input.name].innerHTML = 'Please fill out this field.'; // configure error text
+                this.candidateElements[input.name].style.left = input.offsetLeft + 'px'; // configure error message location
+                this.candidateElements[input.name].style.display = 'initial'; // display error message
 
+                // udpate variable to show that an error has been found
                 errorFound = true;
 
+            // run if the previous check was false
             } else {
+
+                // hide the error message for the current input box
                 this.candidateElements[input.name].style.display = 'none';
             }
         }
 
-        // check to see if there are any special characters in the first & last name inputs
-        for (let character of '!@#$%^&*()_=+[]{}\\|;:,<>/?') {
+        // check if the last name input box is not empty and if it contains a character that shouldn't be in a first name
+        if (this.inputReferences.firstNameInput.value != '' && this.inputReferences.firstNameInput.value.contains('!@#$%^&*()_=+[]{}\\|;:,<>/?')) {
 
-            if (this.inputReferences.firstNameInput.value != '' && this.inputReferences.firstNameInput.value.indexOf(character) != -1) {
+            // configure and display error message
+            this.candidateElements['firstNameError'].innerHTML = 'First name cannot contain special characters.'; // configure error text
+            this.candidateElements['firstNameError'].style.left = this.inputReferences.firstNameInput.offsetLeft + 'px'; // configure error message location
+            this.candidateElements['firstNameError'].style.display = 'initial'; // display error message
 
-                this.candidateElements['firstNameError'].innerHTML = 'First name cannot contain special characters.';
-                this.candidateElements[input.name].style.left = input.offsetLeft + 'px';
-                this.candidateElements['firstNameError'].style.display = 'initial';
+            // erase content in the first name input box
+            this.inputReferences.firstNameInput.value = '';
 
-                this.inputReferences.firstNameInput.value = '';
+            // update variable to show that an error has been found
+            errorFound = true;
+        }
 
-                errorFound = true;
-            }
+        // check if the last name input box is not empty and if it contains a character that shouldn't be in a last name
+        if (this.inputReferences.lastNameInput.value != '' && this.inputReferences.lastNameInput.value.contains('!@#$%^&*()_=+[]{}\\|;:,<>/?')) {
 
-            if (this.inputReferences.lastNameInput.value != '' && this.inputReferences.lastNameInput.value.indexOf(character) != -1) {
+            // configure and display error message
+            this.candidateElements['lastNameError'].innerHTML = 'Last name cannot contain special characters.'; // configure error text
+            this.candidateElements['lastNameError'].style.left = this.inputReferences.lastNameInput.offsetLeft + 'px'; // configure error message location
+            this.candidateElements['lastNameError'].style.display = 'initial'; // display error message
 
-                this.candidateElements['lastNameError'].innerHTML = 'Last name cannot contain special characters.';
-                this.candidateElements[input.name].style.left = input.offsetLeft + 'px';
-                this.candidateElements['lastNameError'].style.display = 'initial';
+            // erase content in the first name input box
+            this.inputReferences.lastNameInput.value = '';
 
-                this.inputReferences.lastNameInput.value = '';
-
-                errorFound = true;
-            }
+            // update variable to show that an error has been found
+            errorFound = true;
         }
 
         // check for mismatching grade number in the grade input and the position input (i.e. a grade 9 student can't be the grade 12 rep)
@@ -174,17 +209,19 @@ class Candidate {
             (this.inputReferences.positionInput.value === 'Grade 12 Representative' && this.inputReferences.gradeInput.value != 'null' && this.inputReferences.gradeInput.value != '12')
         ) {
 
-            this.candidateElements['gradeError'].innerHTML = 'Mismatching grade with positon input.';
-            this.candidateElements['gradeError'].style.left = input.offsetLeft + 'px';
-            this.candidateElements['gradeError'].style.display = 'initial';
+            this.candidateElements['gradeError'].innerHTML = 'Mismatching grade with positon input.'; // configure error text
+            this.candidateElements['gradeError'].style.left = this.inputReferences.gradeInput.offsetLeft + 'px'; // configure error message location
+            this.candidateElements['gradeError'].style.display = 'initial'; // display error message
 
             this.candidateElements['positionError'].innerHTML = 'Mismatching grade with grade input.';
-            this.candidateElements['positionError'].style.left = input.offsetLeft + 'px';
+            this.candidateElements['positionError'].style.left = this.inputReferences.positionInput.offsetLeft + 'px';
             this.candidateElements['positionError'].style.display = 'initial';
 
+            // update variable to show that an error has been found
             errorFound = true;
         }
 
+        // return the variable that keeps track of whether or not an error has been found
         return errorFound;
     }
 
@@ -193,7 +230,7 @@ class Candidate {
     // this will be the function that is called when the user submits data
     submitData() {
 
-        // check to see if there are any errors in the inputs
+        // since the error message function will return true if an error is found, this exits the function if an error is found
         if (this.putErrorMessage()) {return true;}
 
         // reformat the inputted data
@@ -203,17 +240,21 @@ class Candidate {
         this.candidateElements.divHeaderSpan.innerHTML = this.candidateElements.divHeaderSpan.innerHTML.replaceAll('Not Submitted', (this.inputReferences.lastNameInput.value + ', ' + this.inputReferences.firstNameInput.value));
         this.candidateElements.submissionStateImage.setAttribute('src', 'assets/checkmark.png');
         
-        // change buttons that are visible
+        // change buttons that are visible to show the edit button instead of the submit button
         this.candidateElements.submitButton.style.display = 'none';
         this.candidateElements.editButton.style.display = 'inline-block';
 
-        // save information
+        // create variables for the dictionary keys of the candidate info dictionary and the input reference dictionary
         let candidateInfoKeys = Object.keys(this.candidateInfo);
         let inputReferenceKeys = Object.keys(this.inputReferences);
 
-        for (let i = 0; i < candidateInfoKeys.length; i++) {
+        // loop through the candidate info dictionary and the input reference dictionary as if they were arrays, and do it by index to access them in parallel
+        for (let i = 0; i < inputReferenceKeys.length; i++) {
 
+            // separately check if the current dictionary element is the image element
             if (candidateInfoKeys[i] == 'image') {
+
+                // add the image data to the candidate data in a special way 
                 this.candidateInfo[candidateInfoKeys[i]] = this.inputReferences[inputReferenceKeys[i]].files[0];
                 continue;
             }
@@ -224,7 +265,7 @@ class Candidate {
         // update info display
         let candidateTextKeys = Object.keys(this.candidateElements.displayText);
 
-        for (let i = 0; i < candidateInfoKeys.length; i++) {
+        for (let i = 0; i < inputReferenceKeys.length; i++) {
 
             if (candidateInfoKeys[i] == 'message') {
                 this.candidateElements.messageContainer.style.display = 'block';
@@ -244,7 +285,6 @@ class Candidate {
         this.candidateInfo.fullName = this.candidateInfo.lastName + ', ' + this.candidateInfo.firstName;
 
         // update variable so that the candidate is considered completed
-        this.completed = true;
         Candidate.submitted++;
 
         // update the information on the info bar
@@ -255,7 +295,6 @@ class Candidate {
 
         // update input field size
         this.candidateElements.inputDiv.style.maxWidth = this.candidateElements.inputDiv.scrollWidth + 'px';
-        // this.candidateElements.candidateDiv.style.maxWidth = this.candidateElements.candidateDiv.scrollWidth + 'px';
         this.candidateElements.inputDiv.style.maxHeight = this.candidateElements.inputDiv.scrollHeight + 'px';
 
         return false;
@@ -274,7 +313,7 @@ class Candidate {
         let endIndex = this.candidateElements.divHeaderSpan.innerHTML.lastIndexOf('>') + 1;
         this.candidateElements.divHeaderSpan.innerHTML = this.candidateElements.divHeaderSpan.innerHTML.substring(0, endIndex) + 'Not Submitted';
 
-        for (let i = 0; i < candidateInfoKeys.length; i++) {
+        for (let i = 0; i < candidateTextKeys.length; i++) {
 
             if (candidateInfoKeys[i] == 'message') {
                 this.candidateElements.messageContainer.style.display = 'none';
@@ -296,7 +335,6 @@ class Candidate {
         
         
         // update variable to show that the candidate is not complete
-        this.completed = false;
         Candidate.submitted--;
 
         // update the information on the info bar
@@ -344,10 +382,10 @@ class Candidate {
         let inputReferenceKeys = Object.keys(this.inputReferences);
         let candidateTextKeys = Object.keys(this.candidateElements.displayText);
 
-        for (let i = 0; i < candidateInfoKeys.length; i++) {
+        for (let i = 0; i < inputReferenceKeys.length; i++) {
 
             if (candidateInfoKeys[i] == 'message') {
-                this.candidateElements.messageContainer.style.display = 'initial';
+                this.candidateElements.messageContainer.style.display = 'block';
                 this.inputReferences[inputReferenceKeys[i]].style.display = 'none';
                 continue;
             }
@@ -368,7 +406,6 @@ class Candidate {
         this.supress = false;
 
         // update variable to show that the candidate is complete
-        this.completed = true;
         Candidate.submitted++;
 
         // update the information on the info bar
@@ -379,7 +416,7 @@ class Candidate {
         this.candidateElements.submissionStateImage.setAttribute('src', 'assets/checkmark.png');
 
         // run submit function to format stuff
-        this.submitData();
+        // this.submitData();
     }
 
 
