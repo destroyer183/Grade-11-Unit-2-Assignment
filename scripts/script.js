@@ -30,12 +30,14 @@ class Candidate {
     // create class variables
     static candidates = []; // create array to store each candidate object
     static submitted = 0; // create counter to keep track of the amount of submitted candidates
-    static baseWidth; // create variable to store the initial width of the candidate submission divs
     static selectedCandidate; // create variable to store the current selected candidate in the voting menu
     static initialMinWidth; // create variable to store the initial minimum width of the candidate submission divs
 
     // create class constructor that takes in a dictionary of every html element for each candidate div
     constructor(candidateElements) {
+
+        // create variable to track whether or not a candidate has been submitted
+        this.completed = false;
 
         // create class attribute to keep track of whether or not the drop-down animation should be supressed
         this.supress = false;
@@ -294,18 +296,22 @@ class Candidate {
         // set full name attribute for the candidate
         this.candidateInfo.fullName = this.candidateInfo.lastName + ', ' + this.candidateInfo.firstName;
 
-        // update variable so that the candidate is considered completed
+        // update variables so that the candidate is considered completed
+        this.completed = true;
         Candidate.submitted++;
 
         // update the information on the info bar
         Candidate.updateInfoBar();
 
+        // close the div
+        this.animateDiv();
+
         // adjust the size of the candidate divs
         this.adjustDivs();
 
         // update input field size
-        this.candidateElements.inputDiv.style.maxWidth = this.candidateElements.inputDiv.scrollWidth + 'px';
-        this.candidateElements.inputDiv.style.maxHeight = this.candidateElements.inputDiv.scrollHeight + 'px';
+        // this.candidateElements.inputDiv.style.maxWidth = this.candidateElements.inputDiv.scrollWidth + 'px';
+        // this.candidateElements.inputDiv.style.maxHeight = this.candidateElements.inputDiv.scrollHeight + 'px';
 
         // return false if the function finishes without any errors, this specifically returns false, as it is used as both a check, and used to format data in the 'saveData()' function
         return false;
@@ -316,25 +322,29 @@ class Candidate {
     // this function will be called when the user wants to edit the inputted data
     editData() {
 
-        // reset prompt text
-        let candidateInfoKeys = Object.keys(this.candidateInfo);
-        let candidateTextKeys = Object.keys(this.candidateElements.displayText);
-
         // reset header text
         let endIndex = this.candidateElements.divHeaderSpan.innerHTML.lastIndexOf('>') + 1;
         this.candidateElements.divHeaderSpan.innerHTML = this.candidateElements.divHeaderSpan.innerHTML.substring(0, endIndex) + 'Not Submitted';
 
+        // create variables for the dictionary keys of the candidate info dictionary and the display text dictionary
+        let candidateInfoKeys = Object.keys(this.candidateInfo);
+        let candidateTextKeys = Object.keys(this.candidateElements.displayText);
+
+        // loop through the candidate info dictionary and the display text dictionary as if they were arrays, and do it by index to access them in parallel
         for (let i = 0; i < candidateTextKeys.length; i++) {
 
+            // separately check for the message key, since it needs to be handled differently
             if (candidateInfoKeys[i] == 'message') {
+
+                // hide the message info box
                 this.candidateElements.messageContainer.style.display = 'none';
+
+                // skip the rest of the loop
                 continue;
             }
-            try {
-                this.candidateElements.displayText[candidateTextKeys[i]].innerHTML = '';
-            } catch {
-                this.candidateElements.displayText[candidateTextKeys[i]].innerText = '';
-            }
+
+            // remove the text in the display element
+            this.candidateElements.displayText[candidateTextKeys[i]].innerHTML = '';
         }
 
         // put input boxes back on screen
@@ -345,7 +355,8 @@ class Candidate {
 
         
         
-        // update variable to show that the candidate is not complete
+        // update variables to show that the candidate is not complete
+        this.completed = false;
         Candidate.submitted--;
 
         // update the information on the info bar
@@ -359,7 +370,7 @@ class Candidate {
 
         // update input field size
         this.candidateElements.inputDiv.style.maxHeight = this.candidateElements.inputDiv.scrollHeight + 'px';
-        this.candidateElements.candidateDiv.style.maxWidth = this.initialWidth - 16 + 'px';
+        this.candidateElements.candidateDiv.style.maxWidth = this.baseWidth - 16 + 'px';
         
         // remove 'edit' button and display 'save' and 'cancel' buttons
         this.candidateElements.editButton.style.display = 'none';
@@ -372,15 +383,20 @@ class Candidate {
     // this function will be called when the user saves the edited data
     saveData() {
 
-        // call 'submitData' function
-        if (this.submitData()) {return;}
+        // update variable to allow the user to open or close this input box
+        this.supress = false;
+
+        // call 'submitData' function, and if it returns 'true' it means an error is found, so exit the rest of the function if that happens
+        if (this.submitData()) {
+
+            // supress the div from being closed
+            this.supress = true
+            return;
+        }
 
         // hide buttons
         this.candidateElements.saveButton.style.display = 'none';
         this.candidateElements.cancelButton.style.display = 'none';
-
-        // update variable to allow the user to open or close this input box
-        this.supress = false;
     }
 
 
@@ -388,19 +404,26 @@ class Candidate {
     // this function will be called when the user cancels the info edit they are making
     cancelDataEdit() {
 
-        // put original text in prompt text, and hide input boxes
-        let candidateInfoKeys = Object.keys(this.candidateInfo);
+        // create variables references for the dictionary keys of the dictionaries for the candidate info, the input references, and the display text references
+        let candidateInfoKeys  = Object.keys(this.candidateInfo);
         let inputReferenceKeys = Object.keys(this.inputReferences);
-        let candidateTextKeys = Object.keys(this.candidateElements.displayText);
+        let candidateTextKeys  = Object.keys(this.candidateElements.displayText);
 
+        // loop over each of the dictionaries above as if they were arrays, and do it by index so they can be accessed in parallel
         for (let i = 0; i < inputReferenceKeys.length; i++) {
 
+            // separately check for message key since it needs to be handled differently
             if (candidateInfoKeys[i] == 'message') {
+
+                // display the submitted info and hide the input box
                 this.candidateElements.messageContainer.style.display = 'block';
                 this.inputReferences[inputReferenceKeys[i]].style.display = 'none';
+
+                // skip the rest of the loop
                 continue;
             }
 
+            // update display text content and hide input box
             this.candidateElements.displayText[candidateTextKeys[i]].innerHTML = this.candidateInfo[candidateInfoKeys[i]];
             this.inputReferences[inputReferenceKeys[i]].style.display = 'none';
         }
@@ -410,13 +433,14 @@ class Candidate {
         this.candidateElements.cancelButton.style.display = 'none';
         this.candidateElements.editButton.style.display = 'inline-block';
 
-        // update input field size
-        this.candidateElements.inputDiv.style.maxHeight = this.candidateElements.inputDiv.scrollHeight + 'px';
-
         // update variable to allow the user to open or close this input box
         this.supress = false;
 
-        // update variable to show that the candidate is complete
+        // update input field size
+        this.animateDiv();
+
+        // update variables to show that the candidate is complete
+        this.completed = true;
         Candidate.submitted++;
 
         // update the information on the info bar
@@ -425,9 +449,6 @@ class Candidate {
         // update input box information and submission state image
         this.candidateElements.divHeaderSpan.innerHTML = this.candidateElements.divHeaderSpan.innerHTML.replaceAll('Not Submitted', (this.inputReferences.lastNameInput.value + ', ' + this.inputReferences.firstNameInput.value));
         this.candidateElements.submissionStateImage.setAttribute('src', 'assets/checkmark.png');
-
-        // run submit function to format stuff
-        // this.submitData();
     }
 
 
@@ -435,12 +456,13 @@ class Candidate {
     // function that will create the candidate input page
     static createInputPage() {
 
+        // get the master div that will contain each candidate input
         let master = document.getElementById('input-master-div');
 
-        // make 10 boxes
+        // repeat loop 10 times to make 10 boxes
         for (let i = 0; i < 10; i++) {
 
-            // create candidate group
+            // create candidate group as a dictionary
             let candidateItems = {
 
                 candidateDiv: document.createElement('div'), // create candidate div
@@ -501,7 +523,8 @@ class Candidate {
                 cancelButton: document.createElement('button'), // cancel edits button
             };
 
-            candidateItems.displayText = { // dicitonary to hold the input prompts
+            // create a nested dictionary to hold references to each element that displays the inputted info
+            candidateItems.displayText = {
                 firstName: candidateItems.firstNameContainer,
                 lastName: candidateItems.lastNameContainer,
                 grade: candidateItems.gradeContainer,
@@ -510,28 +533,23 @@ class Candidate {
                 image: candidateItems.imageContainer
             };
 
-            candidateItems.inputContainers = {
-                firstName: candidateItems.firstNameDiv,
-                lastName: candidateItems.lastNameDiv,
-                grade: candidateItems.gradeDiv,
-                position: candidateItems.positionDiv,
-                message: candidateItems.messageDiv,
-                image: candidateItems.imageDiv
-            };
 
 
-            // set attributes of header elements
+            // set attributes of main candidate div
             candidateItems.candidateDiv.setAttribute('class', 'candidate-div');
 
+            // set attributes of header div
             candidateItems.headerDiv.setAttribute('class', 'header-div');
 
-
+            // set attributes of arrow that implies the div is expandable
             candidateItems.ddArrow.setAttribute('src', 'assets/ddarrow closed.png');
             candidateItems.ddArrow.setAttribute('class', 'dd-arrow');
 
+            // set attributes of image that shows whether or not a candidate is submitted
             candidateItems.submissionStateImage.setAttribute('src', 'assets/crossmark.png');
             candidateItems.submissionStateImage.setAttribute('class', 'submission-state-image');
 
+            // set attributes of the span that displays the candidate's name
             candidateItems.divHeaderSpan.setAttribute('class', 'div-header-text');
             candidateItems.divHeaderSpan.innerHTML = '<b>Candidate ' + (i+1) + ': </b>Not Submitted';
 
@@ -560,7 +578,7 @@ class Candidate {
             candidateItems.firstNameInputBox.setAttribute('class', 'input-box');
             candidateItems.firstNameInputBox.setAttribute('type', 'text');
             candidateItems.firstNameInputBox.setAttribute('name', 'firstNameError');
-            candidateItems.firstNameInputBox.setAttribute('maxlength', '50');
+            candidateItems.firstNameInputBox.setAttribute('maxlength', '20');
             candidateItems.firstNameInputBox.setAttribute('required', 'required');
 
             candidateItems['firstNameError'].setAttribute('class', 'error-message');
@@ -577,7 +595,7 @@ class Candidate {
             candidateItems.lastNameInputBox.setAttribute('class', 'input-box');
             candidateItems.lastNameInputBox.setAttribute('type', 'text');
             candidateItems.lastNameInputBox.setAttribute('name', 'lastNameError');
-            candidateItems.lastNameInputBox.setAttribute('maxlength', '50');
+            candidateItems.lastNameInputBox.setAttribute('maxlength', '20');
             candidateItems.lastNameInputBox.setAttribute('required', 'required');
 
             candidateItems['lastNameError'].setAttribute('class', 'error-message');
@@ -637,7 +655,7 @@ class Candidate {
             candidateItems.messageInputBox.setAttribute('class', 'input-box');
             candidateItems.messageInputBox.setAttribute('type', 'text');
             candidateItems.messageInputBox.setAttribute('name', 'messageError');
-            candidateItems.messageInputBox.setAttribute('maxlength', '200');
+            candidateItems.messageInputBox.setAttribute('maxlength', '500');
             candidateItems.messageInputBox.setAttribute('required', 'required');
 
             candidateItems['messageError'].setAttribute('class', 'error-message');
@@ -695,6 +713,7 @@ class Candidate {
 
             candidateItems.candidateDiv.appendChild(candidateItems.headerDiv);
             candidateItems.candidateDiv.appendChild(candidateItems.inputDiv);
+            candidateItems.candidateDiv.appendChild(candidateItems.buttonDiv);
 
             candidateItems.headerDiv.appendChild(candidateItems.ddArrow);
             candidateItems.headerDiv.appendChild(candidateItems.submissionStateImage);
@@ -706,7 +725,6 @@ class Candidate {
             candidateItems.inputDiv.appendChild(candidateItems.positionDiv);
             candidateItems.inputDiv.appendChild(candidateItems.messageDiv);
             candidateItems.inputDiv.appendChild(candidateItems.imageDiv);
-            candidateItems.candidateDiv.appendChild(candidateItems.buttonDiv);
 
             candidateItems.firstNameDiv.appendChild(candidateItems.firstNamePrompt);
             candidateItems.firstNamePrompt.appendChild(candidateItems.firstNameContainer);
@@ -743,6 +761,7 @@ class Candidate {
 
             candidateItems.imageDiv.appendChild(candidateItems['imageError']);
             
+            // add event listener to the image input box so that the image preview is updated every time the image is changed
             candidateItems.imageInputBox.onchange = evt => {
                 const [file] = candidateItems.imageInputBox.files;
                 if (file) {
@@ -751,6 +770,7 @@ class Candidate {
                 }
             }
 
+            // add buttons to button div
             candidateItems.buttonDiv.appendChild(candidateItems.submitButton);
             candidateItems.buttonDiv.appendChild(candidateItems.editButton);
             candidateItems.buttonDiv.appendChild(candidateItems.saveButton);
@@ -771,44 +791,63 @@ class Candidate {
     // function to give the div collapsible functionalities
     animateDiv() {
 
+        // prevent div from being closed if the user has chosen to edit the data
         if (this.supress) {return;}
 
+        // store candidate elements in variable for easier access
         let content = this.candidateElements;
 
-        // close div
+        // check if the max height of the input div has a value, which indicates it is expanded, and should be closed
         if (content.inputDiv.style.maxHeight) {
 
+            // update variable to show that the candidate is expanded
             this.expanded = false;
 
+            // shrink the width of the candidate div
             content.candidateDiv.style.width = this.initialWidth - 16 + 'px';
 
+            // remove the value of the maxHeight for the input div and the button div to shrink the candidate div
             content.inputDiv.style.maxHeight = null;
             content.buttonDiv.style.maxHeight = null;
+
+            // change the display of the button div, because using 'inline-block' adds an invisible outline/margin/padding/idk to the div that makes it take up vertical space even when the height is 0.
             content.buttonDiv.style.display = 'block'
 
+            // update image to show that the div is closed
             content.ddArrow.setAttribute('src', 'assets/ddarrow closed.png');
 
-            // disable inputs
+            // disable input boxes so that the user can't edit the content when the div has been closed
             for (let input of Object.values(this.inputReferences)) {
 
                 input.disabled = true;
             }
 
-        // open div
+            // if the div has not been adjusted with the other divs, adjust it now
+            if (this.unadjusted) {this.adjustDivs();}
+
+        // if the div height has no value, this will trigger to expand the div
         } else {
             
+            // update variable to show that the div has been expanded
             this.expanded = true;
 
+            // update variable to store the initial width of the candidate div, so that it can be used later to reset it's size
             this.initialWidth = content.candidateDiv.offsetWidth;
 
+            // set the height of the input div and button div to the values required for all of their content to be visible
             content.inputDiv.style.maxHeight = content.inputDiv.scrollHeight + 'px';
             content.buttonDiv.style.maxHeight = content.buttonDiv.scrollHeight + 'px';
+
+            // set the display of the button div to 'inline-block' so that it is centered horizontally
             content.buttonDiv.style.display = 'inline-block';
 
+            // set the maxWidth of the candidate div to horizontally fill its container
             content.candidateDiv.style.maxWidth = '100%'
 
+            // remove the value of the candidate div's width to allow it to expand when it's content gets larger
             content.candidateDiv.style.width = null;
 
+            // update image to show that the div is expanded
             content.ddArrow.setAttribute('src', 'assets/ddarrow open.png');
 
             // enable inputs
@@ -823,41 +862,51 @@ class Candidate {
 
 
 
-    // function to adjust the size of the divs
+    // function to adjust the size of the divs so that they are the same size
     adjustDivs() {
 
+        console.log('divs are being adjusted...');
+
+        // declare variable to store the value of the largest div found
         let largestDiv = 0;
 
+        // loop over every candidate object
         for (let candidate of Candidate.candidates) {
 
-            if (candidate == this || candidate.expanded) {
+            // make variable for the full header div size with the size of it's content, because the div's width itself doesn't account for overflow.
+            let elements = candidate.candidateElements;
+            let headerWidth = elements.ddArrow.scrollWidth + elements.submissionStateImage.scrollWidth + elements.divHeaderSpan.scrollWidth + 8;
+
+            console.log('header width: ' + headerWidth);
+
+            // check if the current candidate is expanded
+            if (candidate.expanded) {
+
+                // update variable to show that the div was not adjusted, and skip the rest of the function
+                candidate.unadjusted = true;
                 continue;
             }
 
-            candidate = candidate.candidateElements.candidateDiv;
+            // update variable for largest div if current div is bigger than the previous biggest div
+            if (headerWidth > largestDiv) {
 
-            if (candidate.offsetWidth > largestDiv) {
-                largestDiv = candidate.offsetWidth;
+                // store width of biggest div
+                largestDiv = headerWidth;
             }
         }
 
-        if (largestDiv - 16 < Candidate.initialMinWidth) {
-            return;
-        }
-
+        // loop over every candidate object
         for (let candidate of Candidate.candidates) {
 
-            if (candidate == this || candidate.expanded) {
-                continue;
-            }
-
+            // shorten variable size
             candidate = candidate.candidateElements.candidateDiv;
 
+            // update candidate sizing
             candidate.style.display = 'block';
+            candidate.style.minWidth = largestDiv + 'px';
             candidate.style.width = largestDiv - 16 + 'px';
+            Candidate.initialMinWidth = largestDiv;
         }
-
-        Candidate.baseWidth = largestDiv + 'px';
     }
 
     // function to update the info bar depending on the candidates submitted
@@ -879,8 +928,8 @@ class Candidate {
 
         } else {
 
-            candidateCounter.style.display = 'none';
-            endInputButton.style.display = 'inline-block';
+            candidateCounter.style.display = 'inline-block';
+            endInputButton.style.display = 'none';
         }
     }
 
@@ -1113,10 +1162,16 @@ function initialAdjustDivs() {
 
     let largestDiv = 0;
 
-    for (let candidate of candidates) {
+    for (let candidate of Candidate.candidates) {
 
-        if (candidate.offsetWidth > largestDiv) {
-            largestDiv = candidate.offsetWidth;
+        let elements = candidate.candidateElements;
+
+        let headerWidth = elements.ddArrow.scrollWidth + elements.submissionStateImage.scrollWidth + elements.divHeaderSpan.scrollWidth + 8;
+
+        console.log('header width: ' + headerWidth);
+
+        if (headerWidth > largestDiv) {
+            largestDiv = headerWidth;
         }
     }
 
@@ -1133,7 +1188,13 @@ function initialAdjustDivs() {
 
     for (let candidate of Candidate.candidates) {
 
+        candidate.expanded = false;
+
         candidate.initialWidth = candidate.candidateElements.inputDiv.style.maxWidth + 'px';
+
+        candidate.baseWidth = candidate.candidateElements.inputDiv.style.maxWidth + 'px';
+
+        candidate.unadjusted = false;
 
         candidate.candidateElements.inputDiv.style.display = 'block';
         candidate.candidateElements.buttonDiv.style.display = 'block';
@@ -1141,5 +1202,4 @@ function initialAdjustDivs() {
         candidate.candidateElements.messageContainer.style.maxWidth = document.getElementById('input-master-div').clientWidth;
     }
 
-    Candidate.baseWidth = largestDiv + 65 + 'px';
 }
