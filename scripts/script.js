@@ -912,22 +912,28 @@ class Candidate {
     // function to update the info bar depending on the candidates submitted
     static updateInfoBar() {
 
+        // get html elements for the candidate counter and the button to end the candidate submission
         let candidateCounter = document.getElementById('candidate-counter');
         let endInputButton = document.getElementById('end-candidate-input');
 
-        // adjust header div size
+        // adjust header div size, and adjust the placeholder that offsets the location of the master divs for the candidates
         let infoBar = document.getElementById('info-bar');
         document.getElementById('info-bar-placeholder').style.height = infoBar.offsetHeight + 'px';
 
+        // update the text in the candidate counter
         candidateCounter.innerText = Candidate.submitted + '/' + Candidate.candidates.length;
 
+        // check if the number of candidates submitted is equal to the length of the array that contains all the candidates
         if (Candidate.submitted === Candidate.candidates.length) {
 
+            // hide candidate counter, and display the button to end the voting phase
             candidateCounter.style.display = 'none';
             endInputButton.style.display = 'inline-block';
 
+        // run if the previous condition was false
         } else {
 
+            // display candidate counter, and hide button to end the voting phase
             candidateCounter.style.display = 'inline-block';
             endInputButton.style.display = 'none';
         }
@@ -949,18 +955,16 @@ class Candidate {
         let infoBar = document.getElementById('info-bar');
         document.getElementById('info-bar-placeholder').style.height = infoBar.offsetHeight + 'px';
 
-        // load master div
+        // load the voting master div into a variable
         let master = document.getElementById('voting-master-div');
 
-        // set max size
+        // set max size for the master div
         master.style.width = window.innerWidth - 128 + 'px';
 
+        // iterate over every candidate
         for (let candidate of Candidate.candidates) {
 
-            if (!(candidate.completed)) {
-                continue;
-            }
-
+            // create dictionary to store the elements for each candidate display
             let votingItems = {
 
                 votingDiv: document.createElement('div'), // div to hold all of the candidate's info
@@ -995,20 +999,22 @@ class Candidate {
             votingItems.candidateMessage.setAttribute('class', 'candidate-info message-container');
 
             // set data for candidate info
-            // URL.createObjectURL(candidate.candidateInfo.image);
             let image = URL.createObjectURL(candidate.candidateInfo.image);
             votingItems.candidateImage.style.backgroundImage = image;
             votingItems.candidateImage.setAttribute('src', image);
             votingItems.candidateName.innerHTML = '<b>Full Name: </b>' + candidate.candidateInfo.fullName;
+            votingItems.candidateMessage.innerHTML = '<b>Message: </b>' + candidate.candidateInfo.message;
 
 
+            // this if/else block will only add the info for the candidate's grade if their position doesn't specify the grade
+                // i.e. 'Grade 10 Representative' specifies the candidate's grade, and so no extra info will be added
+                // i.e. 'Videographer Apprentice' doesn't specify the candidate's grade, and so that information will be added
             if (['Grade 10 Representative', 'Grade 11 Representative', 'Grade 12 Representative'].indexOf(candidate.candidateInfo.position) != -1) {
                 votingItems.candidatePosition.innerHTML = '<b>Grade & Position: </b>' + candidate.candidateInfo.position;
             } else {
                 votingItems.candidatePosition.innerHTML = '<b>Grade & Position: </b> Grade ' + candidate.candidateInfo.grade + ', ' + candidate.candidateInfo.position;
             }
 
-            votingItems.candidateMessage.innerHTML = '<b>Message: </b>' + candidate.candidateInfo.message;
 
 
 
@@ -1029,33 +1035,49 @@ class Candidate {
             // add new data to candidate object
             candidate.votingElements = votingItems;
 
-
-
+            // add function that selects a div when it is clicked on
             votingItems.votingDiv.addEventListener('click', function() {candidate.selectCandidate();});
         }
     }
 
 
 
+    // this function updates variables and the display to show the user which candidate they have selected
     selectCandidate() {
 
+        // skip function if candidate should be supressed
         if (this.supress) {return;}
 
+        // loop over every candidate
         for (let option of Candidate.candidates) {
+
+            // use a try/catch block to prevent the function from crashing if an error occurs
             try {
+                // clear the id attribute of each voting div, since the id is used to control the enlargement styling of the divs
                 option.votingElements.votingDiv.id = '';
+
+            // catch any errors to prevent the function from crashing
             } catch {}
         }
 
+        // check if the candidate that the function was called on is the candidate that is already selected
         if (this === Candidate.selectedCandidate) {
+
+            // clear the 'selectedCandidate' variable and clear the id to undo the enlargement styling
             Candidate.selectedCandidate = null;
             this.votingElements.votingDiv.id = '';
 
+        // only run if the previous condition was false
         } else {
+
+            // update the id of the candidate that was clicked to apply styling to show that it is selected
             this.votingElements.votingDiv.id = 'grow-enlarge';
+
+            // update 'selectedCandidate' variable to represent the candidate that was selected
             Candidate.selectedCandidate = this;
         }
 
+        // call function to update the information shown on the info bar
         Candidate.updateSelectedCandidate();
 
         // branchlessly update selected candidate instead of using if/else because why not
@@ -1069,12 +1091,22 @@ class Candidate {
     // update the display for the selected candidate
     static updateSelectedCandidate() {
 
+        // check if a candidate is selected
         if (Candidate.selectedCandidate) {
+
+            // show the name of the candidate in the info bar
             document.getElementById('candidate-choice-display').innerText = 'Candidate: ' + Candidate.selectedCandidate.candidateInfo.fullName;
+
+            // display the button to vote for the selected candidate
             document.getElementById('submit-candidate').style.display = 'inline-block';
 
+        // run if the previous condidtion was false
         } else {
+
+            // change the text in the info bar to show that no candidate is selected
             document.getElementById('candidate-choice-display').innerText = 'Candidate: Not Selected';
+
+            // hide button to submit a vote
             document.getElementById('submit-candidate').style.display = 'none';
         }
 
@@ -1085,16 +1117,25 @@ class Candidate {
 
 
 
+    // function that is called when the user clicks the button to submit their vote
     static submitVote() {
 
+        // define variable for the current selected candidate
         let userChoice = Candidate.selectedCandidate;
 
-        // hide other candidates
+        // loop over every candidate
         for (let candidate of Candidate.candidates) {
 
+            // check if the current candidate is not equal to the user's choice
             if (candidate != userChoice) {
+
+                // use try/catch block to prevent the function from crashing if an error occurs
                 try {
+
+                    // hide candidate
                     candidate.votingElements.votingDiv.style.display = 'none';
+
+                // catch errors to prevent crashes
                 } catch {}
             }
         }
@@ -1103,13 +1144,13 @@ class Candidate {
         userChoice.votingElements.votingDiv.id = '';
         userChoice.supress = true;
 
-        // update candidate size
+        // update candidate size to only be as large as necessary instead of being as large as all the other candidates
         let newWidth = userChoice.votingElements.imageDiv.offsetWidth + userChoice.votingElements.infoDiv.offsetWidth + 64;
         if (newWidth < userChoice.votingElements.votingDiv.offsetWidth) {
             userChoice.votingElements.votingDiv.style.width = newWidth + 'px';
         }
 
-        // change css properties
+        // change css properties to prevent the candidate from growing on hover
         userChoice.votingElements.votingDiv.style.cursor = 'initial';
         userChoice.votingElements.votingDiv.setAttribute('class', (userChoice.votingElements.votingDiv.getAttribute('class').replaceAll('grow', '')));
 
@@ -1121,20 +1162,19 @@ class Candidate {
 
 
 
-        // add closing sentence
+        // create closing sentence
         let closingSentence = document.createElement('p');
         closingSentence.setAttribute('id', 'closing-sentence');
         closingSentence.innerText = 'Thank you for your submission.\nYou may now close this page.';
 
+        // add closing sentence to the voting master div
         document.getElementById('voting-master-div').appendChild(closingSentence);
-
-
     }
 }
 
 
 
-// make sure that all of the divs have the same width, and match them all to the longest div.
+// function that is called when the page loads
 function start() {
 
     // make the candidate boxes
@@ -1149,57 +1189,81 @@ function start() {
     // adjust header div size
     let infoBar = document.getElementById('info-bar');
     document.getElementById('info-bar-placeholder').style.height = infoBar.offsetHeight + 'px';
-
-    // infoBar.style.height = infoBar.offsetHeight + 'px';
 }
 
 
 
-// slightly different function that only gets called when the page loads
+// function that only gets called when the page loads to align the divs to be the same size
 function initialAdjustDivs() {
 
+    // get array of every candidate div
     let candidates = document.getElementsByClassName('candidate-div');
 
+    // create variable to represent the width of the largest candidate div
     let largestDiv = 0;
 
+    // loop over every candidate
     for (let candidate of Candidate.candidates) {
 
+        // define variable to be the dicionary of elements within the div
         let elements = candidate.candidateElements;
 
+        // define variable to represent the full width of the header div by adding the width of every element within the header div
+        // this doesn't use the size of the header dif itself because that doesn't account for overflow
         let headerWidth = elements.ddArrow.scrollWidth + elements.submissionStateImage.scrollWidth + elements.divHeaderSpan.scrollWidth + 8;
 
-        console.log('header width: ' + headerWidth);
-
+        // check if the current div's header with is larger than the largest div found so far
         if (headerWidth > largestDiv) {
+
+            // update variable to store the new largest header div
             largestDiv = headerWidth;
         }
     }
 
+    // define variable to represent the extra size needed to accomodate the border radius of the candidate div
+    let borderOffset = 65;
+
+    // loop over every candidate div
     for (let candidate of candidates) {
 
-        candidate.style.display = 'block';
-        candidate.style.width = largestDiv + 65 + 'px';
-        candidate.style.minWidth = largestDiv + 65 + 'px';
+        
 
-        Candidate.initialMinWidth = largestDiv + 65;
+        // update sizing and display of the candidate div
+        candidate.style.display = 'block';
+        candidate.style.width = largestDiv + borderOffset + 'px';
+        candidate.style.minWidth = largestDiv + borderOffset + 'px';
+
     }
 
-    document.getElementById('input-master-div').style.width = window.innerWidth - 128 + 'px';
+    // record the initial minimum width for the largest div
+    Candidate.initialMinWidth = largestDiv + borderOffset;
 
+    // define variable to represent extra offset that stops the edge of a candidate div from being right up against the edge of the page
+    let extraOffset = 128
+
+    // update size of the input master div
+    document.getElementById('input-master-div').style.width = window.innerWidth - extraOffset + 'px';
+
+    // loop over every candidate
     for (let candidate of Candidate.candidates) {
 
+        // create object attribute to show that the candidate div is not expanded
         candidate.expanded = false;
 
+        // create object attribute to store the initial width of the div (this changes as the div's size changes)
         candidate.initialWidth = candidate.candidateElements.inputDiv.style.maxWidth + 'px';
 
+        // create object attribute to store the base width of the div (this will not change, and is used to size the div correctly when the user edits candidate info)
         candidate.baseWidth = candidate.candidateElements.inputDiv.style.maxWidth + 'px';
 
+        // create object attribute to show that the candidate is properly adjusted right now
         candidate.unadjusted = false;
 
+        // update display type for the input div and the button div
         candidate.candidateElements.inputDiv.style.display = 'block';
         candidate.candidateElements.buttonDiv.style.display = 'block';
 
+        // set the max width of the candidate message box
         candidate.candidateElements.messageContainer.style.maxWidth = document.getElementById('input-master-div').clientWidth;
     }
-
 }
