@@ -934,8 +934,8 @@ class Candidate {
         } else {
 
             // display candidate counter, and hide button to end the voting phase
-            candidateCounter.style.display = 'inline-block';
-            endInputButton.style.display = 'none';
+            candidateCounter.style.display = 'none';
+            endInputButton.style.display = 'inline-block';
         }
     }
 
@@ -963,6 +963,9 @@ class Candidate {
 
         // iterate over every candidate
         for (let candidate of Candidate.candidates) {
+
+            // skip display for unsubmitted candidates
+            if (!(candidate.completed)) {continue;}
 
             // create dictionary to store the elements for each candidate display
             let votingItems = {
