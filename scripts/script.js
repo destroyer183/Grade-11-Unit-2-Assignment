@@ -663,6 +663,8 @@ class Candidate {
 
 
             // set attributes for image input
+            candidateItems.imageDiv.style.marginBottom = 0;
+
             candidateItems.imagePrompt.setAttribute('class', 'input-prompt');
             candidateItems.imagePrompt.innerHTML = '<b>Image: </b>';
 
@@ -686,22 +688,22 @@ class Candidate {
 
 
             // set attributes for buttons
-            candidateItems.submitButton.setAttribute('class', 'submission-button');
+            candidateItems.submitButton.setAttribute('class', 'submission-button grow');
             let submitButtonFunction = 'Candidate.candidates[' + i + '].submitData();';
             candidateItems.submitButton.setAttribute('onclick', submitButtonFunction);
             candidateItems.submitButton.innerHTML = 'Submit';
 
-            candidateItems.editButton.setAttribute('class', 'submission-button hidden-on-load');
+            candidateItems.editButton.setAttribute('class', 'submission-button hidden-on-load grow');
             let editButtonFunction = 'Candidate.candidates[' + i + '].editData();';
             candidateItems.editButton.setAttribute('onclick', editButtonFunction);
             candidateItems.editButton.innerHTML = 'Edit';
             
-            candidateItems.saveButton.setAttribute('class', 'submission-button hidden-on-load');
+            candidateItems.saveButton.setAttribute('class', 'submission-button hidden-on-load grow');
             let saveButtonFunction = 'Candidate.candidates[' + i + '].saveData();';
             candidateItems.saveButton.setAttribute('onclick', saveButtonFunction);
             candidateItems.saveButton.innerHTML = 'Save';
 
-            candidateItems.cancelButton.setAttribute('class', 'submission-button hidden-on-load');
+            candidateItems.cancelButton.setAttribute('class', 'submission-button hidden-on-load grow');
             let cancelButtonFunction = 'Candidate.candidates[' + i + '].cancelDataEdit();'; 
             candidateItems.cancelButton.setAttribute('onclick', cancelButtonFunction);
             candidateItems.cancelButton.innerHTML = 'Cancel';

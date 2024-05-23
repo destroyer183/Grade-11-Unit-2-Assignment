@@ -137,6 +137,9 @@ body {
 .input-box {
     font-size: 1.5rem;
     position: relative;
+    border-color: steelblue;
+    border-width: 0.2rem;
+    border-radius: 0.5rem;
 }
 
 .paragraph-container {
@@ -208,6 +211,8 @@ body {
     cursor: pointer;
     background-color: #e0eeff;
     padding: 0.2rem 0.55rem;
+    margin: 1rem;
+    margin-top: 1.5rem;
 }
 
 .error-message {
