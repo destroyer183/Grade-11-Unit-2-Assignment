@@ -812,6 +812,7 @@ class Candidate {
 
             // make the class object
             let temp = new Candidate(candidateItems);
+            let array = new Array();
 
             // give div collapsible functionalities
             candidateItems.headerDiv.addEventListener('click', function() {temp.animateDiv();});

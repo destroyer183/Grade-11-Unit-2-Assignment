@@ -8,14 +8,18 @@
 
     <body onload="start();">
 
-        <!-- header -->
         <div id="info-bar">
+
             <h1 id="header">Candidate Submission</h1>
+
             <h1 id="candidate-counter" class="header-subtext hidden-on-load">0/10</h1>
+
             <button type="button" id="end-candidate-input" class="grow header-button hidden-on-load" onclick="Candidate.loadVotingPage();">Vote</button>
+
             <div id="submission-div" class="hidden-on-load">
-                <!-- <h1 id="candidate-choice-display" class="header-subtext">Candidate: Not Selected</h1> -->
+
                 <button type="button" id="submit-candidate" class="grow hidden-on-load header-button" onclick="Candidate.submitVote();">Submit</button>
+
             </div>
         </div>
 
