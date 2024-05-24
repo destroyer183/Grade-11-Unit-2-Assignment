@@ -11,17 +11,19 @@
         <!-- header -->
         <div id="info-bar">
             <h1 id="header">Candidate Submission</h1>
-            <h1 id="candidate-counter" class="header-subtext">0/10</h1>
-            <button type="button" id="end-candidate-input" class="grow header-button" onclick="Candidate.loadVotingPage();">Vote</button>
+            <h1 id="candidate-counter" class="header-subtext hidden-on-load">0/10</h1>
+            <button type="button" id="end-candidate-input" class="grow header-button hidden-on-load" onclick="Candidate.loadVotingPage();">Vote</button>
             <div id="submission-div" class="hidden-on-load">
-                <h1 id="candidate-choice-display" class="header-subtext">Candidate: Not Selected</h1>
+                <!-- <h1 id="candidate-choice-display" class="header-subtext">Candidate: Not Selected</h1> -->
                 <button type="button" id="submit-candidate" class="grow hidden-on-load header-button" onclick="Candidate.submitVote();">Submit</button>
             </div>
         </div>
 
         <div id="info-bar-placeholder"></div>
 
-        <h1 id="voting-result" class="hidden-on-load">Your Submission:</h1>
+        <h1 id="voting-result" class="hidden-on-load">Winner!</h1>
+        <br>
+        <h1 id="voting-counter" class="hidden-on-load"></h1>
 
         <div id="input-master-div"></div>
 

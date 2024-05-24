@@ -48,7 +48,13 @@ body {
 
 #voting-result {
     font-size: 4rem;
+    margin: 1rem auto;
+}
+
+#voting-counter {
+    font-size: 2.5rem;
     margin: 0 auto;
+    margin-bottom: 0.5rem;
 }
 
 #closing-sentence {
@@ -140,6 +146,11 @@ body {
     border-color: steelblue;
     border-width: 0.2rem;
     border-radius: 0.5rem;
+}
+
+.input-box:focus {
+    background: #e0eeff;
+    outline: none;
 }
 
 .paragraph-container {

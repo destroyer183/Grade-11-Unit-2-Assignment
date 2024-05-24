@@ -45,6 +45,9 @@ class Candidate {
         // create class attribute to store the html elements
         this.candidateElements = candidateElements;
 
+        // create class attribute to store the amount of votes for this candidate
+        this.voteCount = 0;
+
         // create class attribute to hold placeholders for the submitted values of the candidate's data in a dictionary
         this.candidateInfo = {
             firstName: '',
@@ -84,8 +87,10 @@ class Candidate {
 
         // create variables necessary for verifying the format of the data
         let sentenceTerminators = '!.?'; // variable for the punctuation that end a sentence
+        let whitespace = ' \t' // variable for different types of whitespace
         let newSentence = ''; // variable to store the re-formatted sentence
         let previousIsTerminator = false; // variable to keep track of whether or not the last character was a sentence terminator
+        let previousIsWhitespace = false; // variable to keep track of whether or not the last character was a whitespace
 
         // loop over every character in the inputted message
         for (let character of this.inputReferences.messageInput.value.trim()) {
@@ -94,7 +99,7 @@ class Candidate {
             if (previousIsTerminator && !character.contains(sentenceTerminators)) {
 
                 // check if the character is a new line or a space
-                if (character === ' ' || character === '\n') {
+                if (character.contains(whitespace + '\n')) {
 
                     // skip the rest of the loop
                     continue;
@@ -116,7 +121,26 @@ class Candidate {
             // check if the current character is a sentence terminator
             } else if (character.contains(sentenceTerminators)) {
 
+                // check if the previous character was a whitespace
+                if (previousIsWhitespace) {
+                    // remove the whitespace from the full sentence, and update variable to show that the previous character is no longer a whitespace
+                    newSentence = newSentence.substring(0, newSentence.length - 1);
+                    previousIsWhitespace = false;
+                }
+
                 previousIsTerminator = true; // update variable to show that the previous character is a sentence terminator
+                newSentence += character; // add current character to the re-formatted sentence
+
+            } else if (character.contains(whitespace)) {
+
+                // check if the previous character was a whitespace
+                if (previousIsWhitespace) {
+
+                    // skip the rest of the loop to get rid of double space
+                    continue;
+                }
+
+                previousIsWhitespace = true; // update variable to show that the previous character is a whitespace
                 newSentence += character; // add current character to the re-formatted sentence
 
             // run if nothing else triggers
@@ -124,6 +148,9 @@ class Candidate {
 
                 // add current character to re-formatted sentence
                 newSentence += character;
+
+                // update variable to show that the previous character is no longer a whitespace
+                previousIsWhitespace = false;
             }
         }
 
@@ -671,6 +698,9 @@ class Candidate {
             candidateItems.imageContainer.setAttribute('class', 'input-container image-container');
 
             candidateItems.imageInputBox.setAttribute('class', 'input-box image-input');
+            candidateItems.imageInputBox.style.border = 'none';
+            candidateItems.imageInputBox.style.borderRadius = '0';
+
             candidateItems.imageInputBox.setAttribute('type', 'file');
             candidateItems.imageInputBox.setAttribute('name', 'imageError');
             candidateItems.imageInputBox.setAttribute('accept', 'image/*');
@@ -918,15 +948,11 @@ class Candidate {
         let candidateCounter = document.getElementById('candidate-counter');
         let endInputButton = document.getElementById('end-candidate-input');
 
-        // adjust header div size, and adjust the placeholder that offsets the location of the master divs for the candidates
-        let infoBar = document.getElementById('info-bar');
-        document.getElementById('info-bar-placeholder').style.height = infoBar.offsetHeight + 'px';
-
         // update the text in the candidate counter
         candidateCounter.innerText = Candidate.submitted + '/' + Candidate.candidates.length;
 
         // check if the number of candidates submitted is equal to the length of the array that contains all the candidates
-        if (Candidate.submitted === Candidate.candidates.length) {
+        if (Candidate.submitted != 0) {
 
             // hide candidate counter, and display the button to end the voting phase
             candidateCounter.style.display = 'none';
@@ -937,8 +963,12 @@ class Candidate {
 
             // display candidate counter, and hide button to end the voting phase
             candidateCounter.style.display = 'none';
-            endInputButton.style.display = 'inline-block';
+            endInputButton.style.display = 'none';
         }
+
+        // adjust header div size, and adjust the placeholder that offsets the location of the master divs for the candidates
+        let infoBar = document.getElementById('info-bar');
+        document.getElementById('info-bar-placeholder').style.height = infoBar.offsetHeight + 'px';
     }
 
 
@@ -1040,8 +1070,10 @@ class Candidate {
             // add new data to candidate object
             candidate.votingElements = votingItems;
 
-            // add function that selects a div when it is clicked on
+            // add event listeners that update a div's vote counter and make it flash blue when it is clicked
             votingItems.votingDiv.addEventListener('click', function() {candidate.selectCandidate();});
+            votingItems.votingDiv.addEventListener('mousedown', function () {candidate.clickHighlight();})
+            votingItems.votingDiv.addEventListener('mouseup', function () {candidate.clickUnHighlight();})
         }
     }
 
@@ -1053,43 +1085,84 @@ class Candidate {
         // skip function if candidate should be supressed
         if (this.supress) {return;}
 
-        // loop over every candidate
-        for (let option of Candidate.candidates) {
+        // incramenmt the candidate's vote counter
+        this.voteCount++;
 
-            // use a try/catch block to prevent the function from crashing if an error occurs
-            try {
-                // clear the id attribute of each voting div, since the id is used to control the enlargement styling of the divs
-                option.votingElements.votingDiv.id = '';
-
-            // catch any errors to prevent the function from crashing
-            } catch {}
-        }
-
-        // check if the candidate that the function was called on is the candidate that is already selected
-        if (this === Candidate.selectedCandidate) {
-
-            // clear the 'selectedCandidate' variable and clear the id to undo the enlargement styling
-            Candidate.selectedCandidate = null;
-            this.votingElements.votingDiv.id = '';
-
-        // only run if the previous condition was false
-        } else {
-
-            // update the id of the candidate that was clicked to apply styling to show that it is selected
-            this.votingElements.votingDiv.id = 'grow-enlarge';
-
-            // update 'selectedCandidate' variable to represent the candidate that was selected
-            Candidate.selectedCandidate = this;
-        }
-
-        // call function to update the information shown on the info bar
-        Candidate.updateSelectedCandidate();
-
-        // branchlessly update selected candidate instead of using if/else because why not
-        // candidate.votingElements.votingDiv.id = 'grow-enlarge'.repeat(+(candidate === Candidate.selectedCandidate)) + '';
-        // Candidate.selectedCandidate = candidate * (candidate != Candidate.selectedCandidate) + null * (candidate === Candidate.selectedCandidate);
-
+        // display button to submit votes
+        document.getElementById('submit-candidate').style.display = 'inline-block';
+        
+        // adjust header div size
+        let infoBar = document.getElementById('info-bar');
+        document.getElementById('info-bar-placeholder').style.height = infoBar.offsetHeight + 'px';
     }
+
+
+
+    // function to update the color of each candidate display while they are clicked
+    clickHighlight() {
+
+        // skip function if candidate should be supressed
+        if (this.supress) {return;}
+
+        this.votingElements.votingDiv.style.backgroundColor = 'deepskyblue';
+    }
+
+
+
+    // function to unhighlight a div when the mouse button is released
+    clickUnHighlight() {
+
+        // skip function if candidate should be supressed
+        if (this.supress) {return;}
+
+        this.votingElements.votingDiv.style.backgroundColor = 'dodgerblue';
+    }
+
+
+
+    // this function updates variables and the display to show the user which candidate they have selected
+    // selectCandidate() {
+
+    //     // skip function if candidate should be supressed
+    //     if (this.supress) {return;}
+
+    //     // loop over every candidate
+    //     for (let option of Candidate.candidates) {
+
+    //         // use a try/catch block to prevent the function from crashing if an error occurs
+    //         try {
+    //             // clear the id attribute of each voting div, since the id is used to control the enlargement styling of the divs
+    //             option.votingElements.votingDiv.id = '';
+
+    //         // catch any errors to prevent the function from crashing
+    //         } catch {}
+    //     }
+
+    //     // check if the candidate that the function was called on is the candidate that is already selected
+    //     if (this === Candidate.selectedCandidate) {
+
+    //         // clear the 'selectedCandidate' variable and clear the id to undo the enlargement styling
+    //         Candidate.selectedCandidate = null;
+    //         this.votingElements.votingDiv.id = '';
+
+    //     // only run if the previous condition was false
+    //     } else {
+
+    //         // update the id of the candidate that was clicked to apply styling to show that it is selected
+    //         this.votingElements.votingDiv.id = 'grow-enlarge';
+
+    //         // update 'selectedCandidate' variable to represent the candidate that was selected
+    //         Candidate.selectedCandidate = this;
+    //     }
+
+    //     // call function to update the information shown on the info bar
+    //     Candidate.updateSelectedCandidate();
+
+    //     // branchlessly update selected candidate instead of using if/else because why not
+    //     // candidate.votingElements.votingDiv.id = 'grow-enlarge'.repeat(+(candidate === Candidate.selectedCandidate)) + '';
+    //     // Candidate.selectedCandidate = candidate * (candidate != Candidate.selectedCandidate) + null * (candidate === Candidate.selectedCandidate);
+
+    // }
 
 
 
@@ -1125,47 +1198,61 @@ class Candidate {
     // function that is called when the user clicks the button to submit their vote
     static submitVote() {
 
-        // define variable for the current selected candidate
-        let userChoice = Candidate.selectedCandidate;
+        // define variable to store the most amount of votes for a candidate
+        let mostVotes = 0;
+
+        // define variable to store the amount of candidates that had the highest amount of votes
+        let totalCandidates = 0;
 
         // loop over every candidate
         for (let candidate of Candidate.candidates) {
 
-            // check if the current candidate is not equal to the user's choice
-            if (candidate != userChoice) {
+            // check if the current candidate has more votes than any other checked candidate
+            if (candidate.voteCount >= mostVotes) {
 
-                // use try/catch block to prevent the function from crashing if an error occurs
+                // update most votes to match the current candidate
+                mostVotes = candidate.voteCount;
+            }
+        }
+
+        // loop over every candidate
+        for (let candidate of Candidate.candidates) {
+
+            // check if the candidate has less votes than the most amount of votes found
+            if (candidate.voteCount < mostVotes) {
+
+                // try/catch block to prevent errors from crashing the function
                 try {
 
                     // hide candidate
                     candidate.votingElements.votingDiv.style.display = 'none';
 
-                // catch errors to prevent crashes
+                // catch errors
                 } catch {}
+
+            // run if previous condidtion was false
+            } else {
+
+                // increase total candidates by 1
+                totalCandidates++;
+
+                // supress candidate functionalities and remove event listener and animations
+                candidate.supress = true;
+                candidate.votingElements.votingDiv.style.cursor = 'initial';
+                candidate.votingElements.votingDiv.setAttribute('class', (candidate.votingElements.votingDiv.getAttribute('class').replaceAll('grow', '')));
             }
         }
-
-        // remove emphasis and event listener on selected candidate
-        userChoice.votingElements.votingDiv.id = '';
-        userChoice.supress = true;
-
-        // update candidate size to only be as large as necessary instead of being as large as all the other candidates
-        let newWidth = userChoice.votingElements.imageDiv.offsetWidth + userChoice.votingElements.infoDiv.offsetWidth + 64;
-        if (newWidth < userChoice.votingElements.votingDiv.offsetWidth) {
-            userChoice.votingElements.votingDiv.style.width = newWidth + 'px';
-        }
-
-        // change css properties to prevent the candidate from growing on hover
-        userChoice.votingElements.votingDiv.style.cursor = 'initial';
-        userChoice.votingElements.votingDiv.setAttribute('class', (userChoice.votingElements.votingDiv.getAttribute('class').replaceAll('grow', '')));
 
         // hide unnecessary text in header
         document.getElementById('submission-div').style.display = 'none'
 
+        // update info text
+        if (totalCandidates > 1) {document.getElementById('voting-result').innerHTML = 'Tie!';}
+        document.getElementById('voting-counter').innerHTML = 'Votes: ' + mostVotes;
+
         // display text to add more info
         document.getElementById('voting-result').style.display = 'inline-block';
-
-
+        document.getElementById('voting-counter').style.display = 'inline-block';
 
         // create closing sentence
         let closingSentence = document.createElement('p');
@@ -1174,7 +1261,68 @@ class Candidate {
 
         // add closing sentence to the voting master div
         document.getElementById('voting-master-div').appendChild(closingSentence);
+        
+        // adjust header div size
+        let infoBar = document.getElementById('info-bar');
+        document.getElementById('info-bar-placeholder').style.height = infoBar.offsetHeight + 'px';
     }
+
+
+
+    // function that is called when the user clicks the button to submit their vote
+    // static submitVote() {
+
+    //     // define variable for the current selected candidate
+    //     let userChoice = Candidate.selectedCandidate;
+
+    //     // loop over every candidate
+    //     for (let candidate of Candidate.candidates) {
+
+    //         // check if the current candidate is not equal to the user's choice
+    //         if (candidate != userChoice) {
+
+    //             // use try/catch block to prevent the function from crashing if an error occurs
+    //             try {
+
+    //                 // hide candidate
+    //                 candidate.votingElements.votingDiv.style.display = 'none';
+
+    //             // catch errors to prevent crashes
+    //             } catch {}
+    //         }
+    //     }
+
+    //     // remove emphasis and event listener on selected candidate
+    //     userChoice.votingElements.votingDiv.id = '';
+    //     userChoice.supress = true;
+
+    //     // update candidate size to only be as large as necessary instead of being as large as all the other candidates
+    //     let newWidth = userChoice.votingElements.imageDiv.offsetWidth + userChoice.votingElements.infoDiv.offsetWidth + 64;
+    //     if (newWidth < userChoice.votingElements.votingDiv.offsetWidth) {
+    //         userChoice.votingElements.votingDiv.style.width = newWidth + 'px';
+    //     }
+
+    //     // change css properties to prevent the candidate from growing on hover
+    //     userChoice.votingElements.votingDiv.style.cursor = 'initial';
+    //     userChoice.votingElements.votingDiv.setAttribute('class', (userChoice.votingElements.votingDiv.getAttribute('class').replaceAll('grow', '')));
+
+    //     // hide unnecessary text in header
+    //     document.getElementById('submission-div').style.display = 'none'
+
+    //     // display text to add more info
+    //     document.getElementById('voting-result').style.display = 'inline-block';
+    //     document.getElementById('voting-counter').style.display = 'inline-block';
+
+
+
+    //     // create closing sentence
+    //     let closingSentence = document.createElement('p');
+    //     closingSentence.setAttribute('id', 'closing-sentence');
+    //     closingSentence.innerText = 'Thank you for your submission.\nYou may now close this page.';
+
+    //     // add closing sentence to the voting master div
+    //     document.getElementById('voting-master-div').appendChild(closingSentence);
+    // }
 }
 
 
